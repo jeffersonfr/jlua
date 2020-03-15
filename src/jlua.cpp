@@ -19,6 +19,7 @@
  ***************************************************************************/
 #include "jlua.h"
 #include "canvas.h"
+#include "event.h"
 
 #include "jgui/japplication.h"
 #include "jgui/jgraphics.h"
@@ -46,6 +47,95 @@ jLua & jLua::Instance()
 	static jLua instance;
 
 	return instance;
+}
+
+std::string KeySymbolToString(jevent::jkeyevent_symbol_t param) 
+{
+	if (param == jevent::JKS_SPACE) {
+		return "space";
+	} else if (param == jevent::JKS_ENTER) {
+		return "enter";
+	} else if (param == jevent::JKS_1) {
+		return "1";
+	} else if (param == jevent::JKS_2) {
+		return "2";
+	} else if (param == jevent::JKS_3) {
+		return "3";
+	} else if (param == jevent::JKS_4) {
+		return "4";
+	} else if (param == jevent::JKS_5) {
+		return "5";
+	} else if (param == jevent::JKS_6) {
+		return "6";
+	} else if (param == jevent::JKS_7) {
+		return "7";
+	} else if (param == jevent::JKS_8) {
+		return "8";
+	} else if (param == jevent::JKS_9) {
+		return "9";
+	} else if (param == jevent::JKS_0) {
+		return "0";
+	} else if (param == jevent::JKS_CURSOR_LEFT) {
+		return "left";
+	} else if (param == jevent::JKS_CURSOR_RIGHT) {
+		return "right";
+	} else if (param == jevent::JKS_CURSOR_UP) {
+		return "up";
+	} else if (param == jevent::JKS_CURSOR_DOWN) {
+		return "down";
+	}
+
+	return "unknown";
+}
+
+std::string MouseButtonToString(jevent::jmouseevent_button_t param) 
+{
+	return "buton1";
+}
+
+bool jLua::KeyPressed(jevent::KeyEvent *event)
+{
+	Event::keys[KeySymbolToString(event->GetSymbol())] = {
+		"pressed", std::chrono::steady_clock::now()
+	};
+
+	return true;
+}
+
+bool jLua::KeyReleased(jevent::KeyEvent *event)
+{
+	Event::keys[KeySymbolToString(event->GetSymbol())] = {
+		"released", std::chrono::steady_clock::now()
+	};
+
+	return true;
+}
+
+bool jLua::MousePressed(jevent::MouseEvent *event)
+{
+	Event::pointers[MouseButtonToString(event->GetButton())] = {
+		"pressed", std::chrono::steady_clock::now(), event->GetLocation()
+	};
+
+	return true;
+}
+
+bool jLua::MouseReleased(jevent::MouseEvent *event)
+{
+	Event::pointers[MouseButtonToString(event->GetButton())] = {
+		"released", std::chrono::steady_clock::now(), event->GetLocation()
+	};
+
+	return true;
+}
+
+bool jLua::MouseMoved(jevent::MouseEvent *event)
+{
+	Event::pointers[MouseButtonToString(event->GetButton())] = {
+		"moved", std::chrono::steady_clock::now(), event->GetLocation()
+	};
+
+	return true;
 }
 
 void jLua::Paint(jgui::Graphics *g)
@@ -95,6 +185,7 @@ bool jLua::Load(std::string path)
 	luaL_openlibs(l);
 
 	Canvas::Register(l);
+	Event::Register(l);
 	
 	if (luaL_dofile(l, path.c_str())) {
     std::cout << luaL_checkstring(l, -1) << std::endl;

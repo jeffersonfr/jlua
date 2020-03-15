@@ -19,63 +19,15 @@
  ***************************************************************************/
 #include "canvas.h"
 #include "jlua.h"
+#include "utils.h"
 
 #include "jgui/jbufferedimage.h"
-
-#define LOG "\033[1m"
-#define INFO "\033[42m"
-#define WARN "\033[43m"
-#define ERR "\033[41m"
-
-#define Log(id, msg) { \
-    std::ios_base::fmtflags flags(std::cout.flags()); \
-    std::cout << id << "[" << __FILE__ << ":" << __LINE__ << "] \033[1m" << __PRETTY_FUNCTION__ << "\033[0m " << msg << std::endl; \
-    std::cout.flags(flags); \
-  }
 
 std::string
   Canvas::global_name = "canvas";
 
 static const std::string
   local_name = std::string("luaL_") + Canvas::global_name;
-
-static void lua_dump(lua_State *l, std::string msg)
-{
-  std::cout << "----------------- Stack Dump ----------------" << std::endl;
-
-  for (int i=lua_gettop(l); i>=0; i--) {
-    int 
-      type = lua_type(l, i);
-    std::string
-      name = lua_typename(l, type);
-
-    if (type == LUA_TSTRING) {
-      std::cout << "[" << i << "]:<" << name << ">: " << lua_tostring(l, i) << std::endl;
-    } else if (type == LUA_TBOOLEAN) {
-      std::cout << "[" << i << "]:<" << name << ">: " << (bool)lua_toboolean(l, i) << std::endl;
-    } else if (type == LUA_TNUMBER) {
-      std::cout << "[" << i << "]:<" << name << ">: " << lua_tonumber(l, i) << std::endl;
-    } else if (type == LUA_TNIL) {
-      std::cout << "[" << i << "]:<" << name << ">: " << "nil" << std::endl;
-    } else {
-      std::string
-        metatable = "<unknown>";
-
-      if (lua_getmetatable(l, i) != 0) {
-        lua_pushstring(l, "__name");
-        lua_rawget(l, -2);
-
-        metatable = luaL_checkstring(l, -1);
-      }
-
-      std::cout << "[" << i << "]:<" << name << ">: " << metatable << std::endl;
-    }
-  }
-
-  std::cout << "------------------ End Dump -----------------" << std::endl;
-  
-  luaL_error(l, msg.c_str());
-}
 
 Canvas * l_CheckCanvas(lua_State *l, int n)
 {
@@ -557,6 +509,8 @@ static int lua_Canvas_text(lua_State *l)
   jgui::Graphics
     *g = canvas->image->GetGraphics();
 	
+	g->SetFont(&jgui::Font::NORMAL);
+
   if (lua_gettop(l) == 4) { // INFO:: canvas:text(str, x, y)
     std::string
       text = luaL_checkstring(l, 2);
@@ -689,7 +643,7 @@ static int lua_Canvas_rotate(lua_State *l)
     Canvas
       **udata = (Canvas **)lua_newuserdata(l, sizeof(Canvas *));
 
-    *udata = new Canvas(canvas->image->Rotate(degrees*M_PI/180.0f, true));
+    *udata = new Canvas(canvas->image->Rotate(degrees*M_PI/180.0f, false));
 
     luaL_getmetatable(l, local_name.c_str());
     lua_setmetatable(l, -2);

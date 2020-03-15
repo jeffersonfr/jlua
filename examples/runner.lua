@@ -28,7 +28,7 @@ rh = rh/1
 
 -- layer0:translate(0, 320)
 
-while WIN == false do
+function render(tick)
 	if (WIN == false) then
 		for j=1,4,1 do
 			layer0:color(tab[j].color)
@@ -41,7 +41,7 @@ while WIN == false do
 
 			layer0:compose(runner, tab[j].i*rw, 0, rw, rh, tab[j].x+20, (SIZE+8)*j, SIZE, SIZE)
 
-			tab[j].x = tab[j].x + math.random(10)
+			tab[j].x = tab[j].x + math.random(100)*tick
 			tab[j].i = (tab[j].i + 1) % 9
 
 			if ((tab[j].x+SIZE) >= (w - SIZE - 20)) then
@@ -54,6 +54,4 @@ while WIN == false do
 		end
 	end
 end
-
-print ("Finishing Lua GUI")
 

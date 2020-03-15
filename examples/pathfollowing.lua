@@ -1,14 +1,13 @@
 layer0 = canvas.new()
 
 local w, h = layer0:size()
-local path = canvas.new("images/grid.png"):scale(w, h)
 
 arena = {
 	size = {
     width = w,
     height = h
   },
-	bg = path
+	bg = canvas.new("images/grid.png"):scale(w, h)
 }
 
 robot = {
@@ -95,8 +94,6 @@ function robot.rotate(n)
 			robot.angle.index = robot.angle.count
 		end
 	end
-
-	robot.draw()
 end
 
 function robot.camera.capture()
@@ -108,10 +105,12 @@ function robot.camera.capture()
 	camera = camera:scale(cw, ch)
 	camera = camera:rotate(degrees)
 	
-	local size = camera:size()
+	local w, h = camera:size()
 
 	camera = camera:crop((w - cw/2)/2, (h - ch/2)/2, cw/2, ch/2)
-	pixels = camera:pixels(0, 0, robot.camera.size.width, robot.camera.size.height)
+	pixels = camera:pixels(0, 0, camera:size())
+
+	layer0:compose(camera, arena.size.width-180, 120, 64, 64)
 
 	grey = {}
 
@@ -256,21 +255,24 @@ function get_path_values()
 	return tl, tr, bl, br
 end
 
-function pathfollow_robot()
-	local last = {
-		["id"] = "", 
-		["count"] = 0
-	}
+robot.draw()
 
-	-- limites inferior e superior
-	local inf = 8
-	local sup = 64
+local last = {
+	["id"] = "", 
+	["count"] = 0
+}
 
-	while true do
+-- limites inferior e superior
+local inf = 8
+local sup = 64
+
+function render(tick)
 		-- top-left, top-right, bottom-left, bottom-right
 		tl, tr, bl, br = get_path_values()
 
 		print("Path Sensor: ", tl, tr, bl, br)
+
+		layer0:compose(arena.bg, 0, 0)
 
 		-- angle.count = 24
 		-- step.size = 6
@@ -280,47 +282,6 @@ function pathfollow_robot()
 			robot.rotate("-")
 		end
 
-		--[[
-		-- angle.count = 36
-		-- step.size = 3
-		if (tl < sup and tr < sup) then
-			local diff = math.abs(tl-tr)
-
-			if (tl > tr) then
-				if (tl > inf) then
-					robot.rotate("+")
-					robot.rotate("+")
-				end
-			elseif (tl < tr) then
-				if (tr > inf) then
-					robot.rotate("-")
-					robot.rotate("-")
-				end
-			else
-				robot.walk()
-			end
-				
-			robot.walk()
-		elseif (tl > sup and tr > sup) then
-			for i=1,robot.angle.count/6 do
-				robot.rotate("+")
-			end
-		else
-			if (tl > sup) then
-				robot.rotate("+")
-				robot.walk()
-			else
-				robot.rotate("-")
-				robot.walk()
-			end
-		end
-		]]
-
 		robot.walk()
-	end
 end
-
-robot.draw()
-
-pathfollow_robot()
 

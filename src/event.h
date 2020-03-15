@@ -17,46 +17,54 @@
  *   Free Software Foundation, Inc.,                                       *
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
-#ifndef LUA_JLUA_H
-#define LUA_JLUA_H
+#ifndef LUA_EVENT_H
+#define LUA_EVENT_H
 
-#include "jgui/jwindow.h"
+#include "jgui/jimage.h"
 
-#include <mutex>
+#include <chrono>
 
-class Canvas;
+extern "C" {
+	#include <lua.h>
+	#include <lauxlib.h>
+	#include <lualib.h>
+}
 
-class jLua : public jgui::Window {
-
-	public://private:
-		std::vector<Canvas *>
-			_objects;
-		std::mutex
-			_mutex;
-    std::string
-      _path;
-
-	private:
-		virtual bool KeyPressed(jevent::KeyEvent *event);
-		virtual bool KeyReleased(jevent::KeyEvent *event);
-		virtual bool MousePressed(jevent::MouseEvent *event);
-		virtual bool MouseReleased(jevent::MouseEvent *event);
-		virtual bool MouseMoved(jevent::MouseEvent *event);
-
-		virtual void Paint(jgui::Graphics *g);
+class Event {
 
 	public:
-		jLua();
+		struct key_state_t {
+			std::string
+				state;
+			std::chrono::steady_clock::time_point
+				timestamp;
+		};
 
-		virtual ~jLua();
+		struct pointer_state_t {
+			std::string
+				state;
+			std::chrono::steady_clock::time_point
+				timestamp;
+			jgui::jpoint_t<int>
+				position;
+		};
 
-		static jLua & Instance();
+	public:
+    static std::string
+      global_name;
 
-    bool Load(std::string path);
+	public:
+		static std::map<std::string, key_state_t>
+			keys;
+		static std::map<std::string, pointer_state_t>
+			pointers;
 
-		void Add(Canvas *object);
+	public:
+		Event();
 
-		void Remove(Canvas *object);
+		~Event();
+
+		static void Register(lua_State *l);
 
 };
 

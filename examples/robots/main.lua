@@ -502,210 +502,208 @@ function Arena:background()
 	layer0:rect("draw", safe.left, safe.top, screen_width-safe.left-safe.right, screen_height-safe.top-safe.bottom)
 end
 
-function Arena:start()
-	-- collectgarbage("step", 100)
+local threads = {}
 
-	local threads = {}
+local uptime = 0 -- TODO:: system.uptime()
+local count = 0
+local cycles = 0
 
+function Arena:reset()
 	for i=1,#self._robots do
 		threads[#threads+1] = {
 			["main"] = coroutine.create(function()
-				self._robots[i]:main()
-			end),
+					self._robots[i]:main()
+					end),
 			["robot"] = self._robots[i]
 		}
 	end
+end
 
-	local uptime = 0 -- TODO:: system.uptime()
-	local count = 0
-	local cycles = 0
+function Arena:start()
+	local discards = {}
 
-	while (true) do
-		local discards = {}
+	if (#threads <= 1) then
+		return
+	end
 
-		if (#threads <= 1) then
-			break
-		end
+	for i=1,#threads do
+		local thread = threads[i]
 
-		for i=1,#threads do
-			local thread = threads[i]
-	
-			if (coroutine.resume(thread.main) == true) then
-				-- get command from thread and update the robot location
-			else
-				local trace = debug.traceback(thread.main)
-
-				if (#trace > 16) then
-					print(trace)
-				end
-			end
-
-			if (thread.robot:health() <= 0) then
-				discards[#discards+1] = i
-			end
-		end
-		
-		for i=#discards,1,-1 do
-			table.remove(threads, discards[i])
-			table.remove(self._robots, discards[i])
-		end
-
-		self.background()
-
-		for i=1,#self._robots do
-			local robot = self._robots[i]
-
-			if (robot:health() > 0) then
-				self._robots[i]:draw()
-			end
-		end
-			
-		discards = {}
-
-		for i=1,#self._objects do
-			local o = self._objects[i]
-
-			if (o.name == "rocket") then
-				local rotate_rocket = rocket:rotate(o.angle)
-
-				layer0:compose(rotate_rocket, o.x, o.y)
-
-				o.x = o.x - o.step*math.sin((o.angle*math.pi)/180.0)
-				o.y = o.y - o.step*math.cos((o.angle*math.pi)/180.0)
-
-				if (o.x < 0 or o.y < 0 or o.x > screen_width or o.y > screen_height) then
-					discards[#discards+1] = i
-				end
-
-				-- INFO:: verify collision
-				local collision, target = self:collision_detect(o.index, {
-					["x"] = o.x+iw/2-4,
-					["y"] = o.y+ih/2-4,
-					["width"] = 8,
-					["height"] = 8
-				})
-
-				if (collision == true) then
-					play_sound("explosion")
-
-					target._health = target._health - 5
-
-					self._objects[#self._objects+1] = {
-						["name"] = "explosion",
-						["x"] = o.x,
-						["y"] = o.y,
-						["index"] = 0
-					}
-
-					discards[#discards+1] = i
-				end
-			elseif (o.name == "bullet") then
-				layer0:compose(bullet, o.x, o.y)
-
-				o.x = o.x - o.step*math.sin((o.angle*math.pi)/180.0)
-				o.y = o.y - o.step*math.cos((o.angle*math.pi)/180.0)
-
-				if (o.x < 0 or o.y < 0 or o.x > screen_width or o.y > screen_height) then
-					discards[#discards+1] = i
-				end
-
-				-- INFO:: verify collision
-				local collision, target = self:collision_detect(o.index, {
-					["x"] = o.x+iw/2-2,
-					["y"] = o.y+ih/2-2,
-					["width"] = 4,
-					["height"] = 4
-				})
-
-				if (collision == true) then
-					play_sound("gun-fire")
-
-					target._health = target._health - 1
-
-					self._objects[#self._objects+1] = {
-						["name"] = "impact",
-						["x"] = o.x,
-						["y"] = o.y,
-						["index"] = 0
-					}
-
-					discards[#discards+1] = i
-				end
-			elseif (o.name == "found") then
-				layer0:color(0x80f00000)
-				-- layer0:oval("fill", o.x1, o.y1, iw/2)
-					
-				-- discards[#discards+1] = i
-				layer0:linesize(10)
-				layer0:line(o.x, o.y, o.x1, o.y1)
-				layer0:linesize(1)
-			elseif (o.name == "scan") then
-				layer0:color(0x40f0f0f0)
-
-				if (o.mode == "linear") then
-					local x = o.x+iw/2
-					local y = o.y+ih/2
-
-					o.angle = o.angle + 180
-
-					local rad0 = (o.angle*math.pi)/180.0+math.pi/2.0
-					local rad1 = (linear_range*math.pi)/180.0
-
-					layer0:polygon("draw:close", 
-						x, y,
-						0, 0,
-						math.sin(rad0-rad1)*linear_radius, math.cos(rad0-rad1)*linear_radius,
-						math.sin(rad0+rad1)*linear_radius, math.cos(rad0+rad1)*linear_radius
-					)
-					
-					-- layer0:oval("draw", x, y, linear_radius, linear_radius, o.angle-linear_range, o.angle+linear_range)
-					-- layer0:line(x, y, x+math.sin(rad0-rad1)*linear_radius, y+math.cos(rad0-rad1)*linear_radius)
-					-- layer0:line(x, y, x+math.sin(rad0+rad1)*linear_radius, y+math.cos(rad0+rad1)*linear_radius)
-				elseif (o.mode == "radial") then
-					layer0:oval("draw", o.x+iw/2, o.y+ih/2, radial_radius)
-				end
-
-				discards[#discards+1] = i
-			elseif (o.name == "impact") then
-				layer0:compose(explosion.frames[1], o.x, o.y)
-
-				discards[#discards+1] = i
-			elseif (o.name == "explosion") then
-				layer0:compose(explosion.frames[o.index+1], o.x, o.y)
-
-				o.index = math.fmod(o.index + 1, #explosion.frames);
-
-				if (o.index == 0) then
-					discards[#discards+1] = i
-				end
-			end
-		end
-	
-		for i=#discards,1,-1 do
-			table.remove(self._objects, discards[i])
-		end
-
-		-- CHANGE:: frame rate
-		local framerate = 1.0/self._frames
-		local totaltime = (1000 * count) * framerate
-		local currenttime = 0 -- TODO:: system.uptime()-uptime
-
-		if (totaltime > currenttime) then
-			-- TODO:: system.sleep(math.floor(totaltime-currenttime))
+		if (coroutine.resume(thread.main) == true) then
+			-- get command from thread and update the robot location
 		else
-			-- INFO:: reset parameters to avoid weird changes of time
-			-- TODO:: uptime = system.uptime()
-			count = 0
-			
-			-- TODO:: system.sleep(math.floor(framerate*1000))
+			local trace = debug.traceback(thread.main)
+
+			if (#trace > 16) then
+				print(trace)
+			end
 		end
 
-		count = count + 1
-		cycles = cycles + 1
-
-		if (cycles >= self._cycles) then
-			break
+		if (thread.robot:health() <= 0) then
+			discards[#discards+1] = i
 		end
+	end
+	
+	for i=#discards,1,-1 do
+		table.remove(threads, discards[i])
+		table.remove(self._robots, discards[i])
+	end
+
+	self.background()
+
+	for i=1,#self._robots do
+		local robot = self._robots[i]
+
+		if (robot:health() > 0) then
+			self._robots[i]:draw()
+		end
+	end
+		
+	discards = {}
+
+	for i=1,#self._objects do
+		local o = self._objects[i]
+
+		if (o.name == "rocket") then
+			local rotate_rocket = rocket:rotate(o.angle)
+
+			layer0:compose(rotate_rocket, o.x, o.y)
+
+			o.x = o.x - o.step*math.sin((o.angle*math.pi)/180.0)
+			o.y = o.y - o.step*math.cos((o.angle*math.pi)/180.0)
+
+			if (o.x < 0 or o.y < 0 or o.x > screen_width or o.y > screen_height) then
+				discards[#discards+1] = i
+			end
+
+			-- INFO:: verify collision
+			local collision, target = self:collision_detect(o.index, {
+				["x"] = o.x+iw/2-4,
+				["y"] = o.y+ih/2-4,
+				["width"] = 8,
+				["height"] = 8
+			})
+
+			if (collision == true) then
+				play_sound("explosion")
+
+				target._health = target._health - 5
+
+				self._objects[#self._objects+1] = {
+					["name"] = "explosion",
+					["x"] = o.x,
+					["y"] = o.y,
+					["index"] = 0
+				}
+
+				discards[#discards+1] = i
+			end
+		elseif (o.name == "bullet") then
+			layer0:compose(bullet, o.x, o.y)
+
+			o.x = o.x - o.step*math.sin((o.angle*math.pi)/180.0)
+			o.y = o.y - o.step*math.cos((o.angle*math.pi)/180.0)
+
+			if (o.x < 0 or o.y < 0 or o.x > screen_width or o.y > screen_height) then
+				discards[#discards+1] = i
+			end
+
+			-- INFO:: verify collision
+			local collision, target = self:collision_detect(o.index, {
+				["x"] = o.x+iw/2-2,
+				["y"] = o.y+ih/2-2,
+				["width"] = 4,
+				["height"] = 4
+			})
+
+			if (collision == true) then
+				play_sound("gun-fire")
+
+				target._health = target._health - 1
+
+				self._objects[#self._objects+1] = {
+					["name"] = "impact",
+					["x"] = o.x,
+					["y"] = o.y,
+					["index"] = 0
+				}
+
+				discards[#discards+1] = i
+			end
+		elseif (o.name == "found") then
+			layer0:color(0x80f00000)
+			-- layer0:oval("fill", o.x1, o.y1, iw/2)
+				
+			-- discards[#discards+1] = i
+			layer0:linesize(10)
+			layer0:line(o.x, o.y, o.x1, o.y1)
+			layer0:linesize(1)
+		elseif (o.name == "scan") then
+			layer0:color(0x40f0f0f0)
+
+			if (o.mode == "linear") then
+				local x = o.x+iw/2
+				local y = o.y+ih/2
+
+				o.angle = o.angle + 180
+
+				local rad0 = (o.angle*math.pi)/180.0+math.pi/2.0
+				local rad1 = (linear_range*math.pi)/180.0
+
+				layer0:polygon("draw:close", 
+					x, y,
+					0, 0,
+					math.sin(rad0-rad1)*linear_radius, math.cos(rad0-rad1)*linear_radius,
+					math.sin(rad0+rad1)*linear_radius, math.cos(rad0+rad1)*linear_radius
+				)
+				
+				-- layer0:oval("draw", x, y, linear_radius, linear_radius, o.angle-linear_range, o.angle+linear_range)
+				-- layer0:line(x, y, x+math.sin(rad0-rad1)*linear_radius, y+math.cos(rad0-rad1)*linear_radius)
+				-- layer0:line(x, y, x+math.sin(rad0+rad1)*linear_radius, y+math.cos(rad0+rad1)*linear_radius)
+			elseif (o.mode == "radial") then
+				layer0:oval("draw", o.x+iw/2, o.y+ih/2, radial_radius)
+			end
+
+			discards[#discards+1] = i
+		elseif (o.name == "impact") then
+			layer0:compose(explosion.frames[1], o.x, o.y)
+
+			discards[#discards+1] = i
+		elseif (o.name == "explosion") then
+			layer0:compose(explosion.frames[o.index+1], o.x, o.y)
+
+			o.index = math.fmod(o.index + 1, #explosion.frames);
+
+			if (o.index == 0) then
+				discards[#discards+1] = i
+			end
+		end
+	end
+
+	for i=#discards,1,-1 do
+		table.remove(self._objects, discards[i])
+	end
+
+	-- CHANGE:: frame rate
+	local framerate = 1.0/self._frames
+	local totaltime = (1000 * count) * framerate
+	local currenttime = 0 -- TODO:: system.uptime()-uptime
+
+	if (totaltime > currenttime) then
+		-- TODO:: system.sleep(math.floor(totaltime-currenttime))
+	else
+		-- INFO:: reset parameters to avoid weird changes of time
+		-- TODO:: uptime = system.uptime()
+		count = 0
+		
+		-- TODO:: system.sleep(math.floor(framerate*1000))
+	end
+
+	count = count + 1
+	cycles = cycles + 1
+
+	if (cycles >= self._cycles) then
+		return
 	end
 end
 
@@ -1103,5 +1101,10 @@ dofile('bunny-robot.lua')
 dofile('kamikaze-robot.lua')
 dofile('target-robot.lua')
 
-arena:start()
-arena:result()
+arena:reset()
+
+function render(tick)
+	arena:start()
+end
+
+-- arena:result()

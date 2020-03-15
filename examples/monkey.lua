@@ -42,59 +42,55 @@ end
 layer0:compose(iharbour, 0, 0, w, h)
 redraw()
 	
-while (true) do
-	local e = events.get()
+function render(tick)
+	local step = 128
 
-	if (e ~= nil and e.type ~= "release") then
-		print("event:: [" .. e.code .. ", " .. e.symbol .. "] " .. e.type)
-
-		if (e.symbol == "exit") then
-			break
-		end
-
-		if (win == 1) then
-			return
-		end
-
-		if (e.symbol == "left") then
-			monkey.x = monkey.x - 10
-		elseif (e.symbol == "right") then
-			monkey.x = monkey.x + 10
-		elseif (e.symbol == "up") then
-			monkey.y = monkey.y - 10
-		elseif (e.symbol == "down") then
-			monkey.y = monkey.y + 10
-		end
-
-		if (monkey.x < 100) then
-			monkey.x = 100
-		end
-
-		if (monkey.x > 300) then
-			monkey.x = 300
-		end
-
-		if (monkey.y < 100) then
-			monkey.y = 100
-		end
-
-		if (monkey.y > 300) then
-			monkey.y = 300
-		end
-
-		if collide(monkey, banana) then
-			win = 1
-
-			layer0:compose(iwinner, banana.x+banana.dx/2, banana.y+banana.dy/2)
-
-			--system.sleep(2*1000)
-
-			break
-		end
-
-		redraw()
+	if (win == 1) then
+		return
 	end
 
-	events.wait() 
+	if (event.key("left").state == "pressed") then
+		monkey.x = monkey.x - step*tick
+	end
+
+	if (event.key("right").state == "pressed") then
+		monkey.x = monkey.x + step*tick
+	end
+
+	if (event.key("up").state == "pressed") then
+		monkey.y = monkey.y - step*tick
+	end
+
+	if (event.key("down").state == "pressed") then
+		monkey.y = monkey.y + step*tick
+	end
+
+	if (monkey.x < 100) then
+		monkey.x = 100
+	end
+
+	if (monkey.x > 300) then
+		monkey.x = 300
+	end
+
+	if (monkey.y < 100) then
+		monkey.y = 100
+	end
+
+	if (monkey.y > 300) then
+		monkey.y = 300
+	end
+
+	if collide(monkey, banana) then
+		win = 1
+
+		layer0:compose(iwinner, banana.x+banana.dx/2, banana.y+banana.dy/2)
+
+		--system.sleep(2*1000)
+
+		return
+	end
+
+	redraw()
 end
 

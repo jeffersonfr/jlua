@@ -132,35 +132,24 @@ function render(tick)
 		layer0:rect("fill", board.food.x*size, board.food.y*size, size, size)
 	end
 
-	-- events
-	if (input_enable == false) then
-		return
+	if (event.key("left").state == "pressed") then
+		dx = -1
+		dy = 0
 	end
 
-  --[[
-	local e = events.get()
-
-	if (e ~= nil and e.type ~= "release") then
-		print("event:: [" .. e.code .. ", " .. e.symbol .. "] " .. e.type)
-		
-		if (e.symbol == "exit") then
-			break
-		end
-		
-		if (e.symbol == "left") then
-			dx = -1
-			dy = 0
-		elseif (e.symbol == "right") then
-			dx = 1
-			dy = 0
-		elseif (e.symbol == "up") then
-			dx = 0
-			dy = -1
-		elseif (e.symbol == "down") then
-			dx = 0
-			dy = 1
-		end
+	if (event.key("right").state == "pressed") then
+		dx = 1
+		dy = 0
 	end
-  ]]
+
+	if (event.key("up").state == "pressed") then
+		dx = 0
+		dy = -1
+	end
+
+	if (event.key("down").state == "pressed") then
+		dx = 0
+		dy = 1
+	end
 end
 

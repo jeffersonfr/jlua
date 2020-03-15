@@ -17,47 +17,23 @@
  *   Free Software Foundation, Inc.,                                       *
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
-#ifndef LUA_JLUA_H
-#define LUA_JLUA_H
+#include <string>
 
-#include "jgui/jwindow.h"
+extern "C" {
+	#include <lua.h>
+	#include <lauxlib.h>
+	#include <lualib.h>
+}
 
-#include <mutex>
+#define LOG "\033[1m"
+#define INFO "\033[42m"
+#define WARN "\033[43m"
+#define ERR "\033[41m"
 
-class Canvas;
+#define Log(id, msg) { \
+    std::ios_base::fmtflags flags(std::cout.flags()); \
+    std::cout << id << "[" << __FILE__ << ":" << __LINE__ << "] \033[1m" << __PRETTY_FUNCTION__ << "\033[0m " << msg << std::endl; \
+    std::cout.flags(flags); \
+  }
 
-class jLua : public jgui::Window {
-
-	public://private:
-		std::vector<Canvas *>
-			_objects;
-		std::mutex
-			_mutex;
-    std::string
-      _path;
-
-	private:
-		virtual bool KeyPressed(jevent::KeyEvent *event);
-		virtual bool KeyReleased(jevent::KeyEvent *event);
-		virtual bool MousePressed(jevent::MouseEvent *event);
-		virtual bool MouseReleased(jevent::MouseEvent *event);
-		virtual bool MouseMoved(jevent::MouseEvent *event);
-
-		virtual void Paint(jgui::Graphics *g);
-
-	public:
-		jLua();
-
-		virtual ~jLua();
-
-		static jLua & Instance();
-
-    bool Load(std::string path);
-
-		void Add(Canvas *object);
-
-		void Remove(Canvas *object);
-
-};
-
-#endif
+void lua_dump(lua_State *l, std::string msg);

@@ -7,6 +7,8 @@ include_directories(
 
 add_executable(jlua
     canvas.cpp
+		event.cpp
+		utils.cpp
     jlua.cpp
     main.cpp
   )

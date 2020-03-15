@@ -95,6 +95,6 @@ for j=1,m do
 	cell[j][m/2] = 1
 end
 
-while (true) do
+function render(tick)
 	refresh()
 end

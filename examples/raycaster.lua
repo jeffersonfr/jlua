@@ -143,43 +143,36 @@ function redraw()
 	end
 end
 
-while (true) do
+function render(tick)
+	local ox = player.x
+	local oy = player.y
+
+	if (event.key("up").state == "pressed") then
+		-- move player forward
+		player.x = player.x + math.cos(player.ang * math.pi / 180) * config.player_speed
+		player.y = player.y + math.sin(player.ang * math.pi / 180) * config.player_speed
+	end
+
+	if (event.key("down").state == "pressed") then
+		-- move player backwards
+		player.x = player.x - math.cos(player.ang * math.pi / 180) * config.player_speed
+		player.y = player.y - math.sin(player.ang * math.pi / 180) * config.player_speed
+	end
+	
+	if (event.key("right").state == "pressed") then
+		player.ang = (player.ang + config.player_turn) % 360
+	end
+	
+	if (event.key("left").state == "pressed") then
+		player.ang = (player.ang + 360 - config.player_turn) % 360
+	end
+
+	-- clip the player to the walls
+	if (get_map(player.x, player.y) ~= 0) then
+		player.x = ox
+		player.y = oy
+	end
+	
 	redraw()
-
-	--system.sleep(10)
-
-	-- events
-	if (input_enable == false) then
-		return
-	end
-
-	local e = events.get()
-
-	if (e ~= nil) then
-		print("event:: [" .. e.code .. ", " .. e.symbol .. "] " .. e.type)
-
-		local ox = player.x
-		local oy = player.y
-
-		if (e.symbol == "up") then
-			-- move player forward
-			player.x = player.x + math.cos(player.ang * math.pi / 180) * config.player_speed
-			player.y = player.y + math.sin(player.ang * math.pi / 180) * config.player_speed
-		elseif (e.symbol == "down") then
-			-- move player backwards
-			player.x = player.x - math.cos(player.ang * math.pi / 180) * config.player_speed
-			player.y = player.y - math.sin(player.ang * math.pi / 180) * config.player_speed
-		elseif (e.symbol == "right") then
-			player.ang = (player.ang + config.player_turn) % 360
-		elseif (e.symbol == "left") then
-			player.ang = (player.ang + 360 - config.player_turn) % 360
-		end
-
-		-- clip the player to the walls
-		if (get_map(player.x, player.y) ~= 0) then
-			player.x = ox
-			player.y = oy
-		end
-	end
 end
 
