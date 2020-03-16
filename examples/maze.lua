@@ -1,4 +1,4 @@
-layer0 = canvas.new()
+layer0 = canvas.new(1920, 1080)
 
 local square_size = 50
 local board_size = 17
@@ -118,3 +118,9 @@ function moveFrom(x, y)
 end
 
 moveFrom(2,2)
+
+function configure()
+	canvas.compose(layer0, 0, 0, canvas.size())
+end
+
+configure()

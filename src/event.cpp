@@ -19,7 +19,6 @@
  ***************************************************************************/
 #include "event.h"
 #include "jlua.h"
-#include "utils.h"
 
 #include "jgui/jbufferedimage.h"
 
@@ -34,11 +33,6 @@ std::map<std::string, Event::pointer_state_t>
 static const std::string
   local_name = std::string("luaL_") + Event::global_name;
 
-Event * l_CheckEvent(lua_State *l, int n)
-{
-	return *(Event **)luaL_checkudata(l, n, local_name.c_str());
-}
-
 int lua_Event_key(lua_State *l)
 {
 	std::chrono::steady_clock::time_point
@@ -48,9 +42,20 @@ int lua_Event_key(lua_State *l)
     std::string
       key = luaL_checkstring(l, 1);
 
+		decltype(Event::keys)::iterator
+			i = Event::keys.find(key);
+		std::string
+			state = "released";
+
+		if (i != Event::keys.end()) {
+			state = i->second.state;
+		} else {
+			Event::keys[key].state = state;
+		}
+
 		lua_createtable(l, 0, 2);
 
-		lua_pushstring(l, Event::keys[key].state.c_str());
+		lua_pushstring(l, state.c_str());
 		lua_setfield(l, -2, "state");
 	
 		lua_pushnumber(l, (now - Event::keys[key].timestamp).count());
@@ -68,22 +73,49 @@ int lua_Event_key(lua_State *l)
 
 int lua_Event_pointer(lua_State *l)
 {
-  if (lua_gettop(l) == 1) { // INFO:("button"): returns the pointer state
-	/*
+	std::chrono::steady_clock::time_point
+		now = std::chrono::steady_clock::now();
+
+  if (lua_gettop(l) == 1) { // INFO:("<index>"): returns the button state
     std::string
-      path = luaL_checkstring(l, 1);
+      index = luaL_checkstring(l, 1);
 
-    Event
-      **udata = (Event **)lua_newuserdata(l, sizeof(Event *));
+		decltype(Event::pointers)::iterator
+			i = Event::pointers.find(index);
+		std::string
+			state = "released";
 
-    *udata = new Event(new jgui::BufferedImage(path));
-		*/
+		if (i != Event::pointers.end()) {
+			state = i->second.state;
+		} else {
+			Event::pointers[index].state = state;
+		}
+
+		lua_createtable(l, 0, 5);
+
+		lua_pushstring(l, state.c_str());
+		lua_setfield(l, -2, "state");
+	
+		lua_pushnumber(l, (now - Event::pointers[index].timestamp).count());
+		lua_setfield(l, -2, "interval");
+	
+		lua_pushnumber(l, Event::pointers[index].count);
+		lua_setfield(l, -2, "count");
+	
+		lua_pushnumber(l, Event::pointers[index].position.x);
+		lua_setfield(l, -2, "x");
+	
+		lua_pushnumber(l, Event::pointers[index].position.y);
+		lua_setfield(l, -2, "y");
+	
+		Event::pointers[index].timestamp = now;
+
+		return 1;
   }
 	
-	luaL_getmetatable(l, local_name.c_str());
-	lua_setmetatable(l, -2);
+  lua_dump(l, "event:point() => invalid parameters");
 
-	return 1;
+	return 0;
 }
 
 Event::Event()
@@ -92,6 +124,11 @@ Event::Event()
 
 Event::~Event()
 {
+}
+
+Event * Event::Check(lua_State *l, int n)
+{
+	return *(Event **)luaL_checkudata(l, n, local_name.c_str());
 }
 
 void Event::Register(lua_State *l)

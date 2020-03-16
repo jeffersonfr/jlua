@@ -25,12 +25,12 @@ extern "C" {
 	#include <lualib.h>
 }
 
-#define LOG "\033[1m"
-#define INFO "\033[42m"
-#define WARN "\033[43m"
-#define ERR "\033[41m"
+#define LOG "\033[1m\033[30m"
+#define INFO "\033[42m\033[30m"
+#define WARN "\033[43m\033[30m"
+#define ERR "\033[41m\033[30m"
 
-#define Log(id, msg) { \
+#define L(id, msg) { \
     std::ios_base::fmtflags flags(std::cout.flags()); \
     std::cout << id << "[" << __FILE__ << ":" << __LINE__ << "] \033[1m" << __PRETTY_FUNCTION__ << "\033[0m " << msg << std::endl; \
     std::cout.flags(flags); \

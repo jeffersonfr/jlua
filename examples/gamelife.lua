@@ -1,4 +1,4 @@
-layer0 = canvas.new()
+layer0 = canvas.new(1920, 1080)
 
 local m = 120
 local w, h = layer0:size()
@@ -97,4 +97,6 @@ end
 
 function render(tick)
 	refresh()
+
+	canvas.compose(layer0, 0, 0, canvas.size())
 end

@@ -26,13 +26,13 @@
 
 class Canvas;
 
-class jLua : public jgui::Window {
+class jLua : public jgui::Window, jevent::WindowListener {
 
 	public://private:
-		std::vector<Canvas *>
-			_objects;
+		jgui::Image
+			*_graphicLayer;
 		std::mutex
-			_mutex;
+			_lua_mutex;
     std::string
       _path;
 
@@ -42,6 +42,15 @@ class jLua : public jgui::Window {
 		virtual bool MousePressed(jevent::MouseEvent *event);
 		virtual bool MouseReleased(jevent::MouseEvent *event);
 		virtual bool MouseMoved(jevent::MouseEvent *event);
+
+    virtual void WindowOpened(jevent::WindowEvent *event);
+    virtual void WindowClosing(jevent::WindowEvent *event);
+    virtual void WindowClosed(jevent::WindowEvent *event);
+    virtual void WindowResized(jevent::WindowEvent *event);
+    virtual void WindowMoved(jevent::WindowEvent *event);
+    virtual void WindowPainted(jevent::WindowEvent *event);
+    virtual void WindowEntered(jevent::WindowEvent *event);
+    virtual void WindowLeaved(jevent::WindowEvent *event);
 
 		virtual void Paint(jgui::Graphics *g);
 
@@ -54,9 +63,7 @@ class jLua : public jgui::Window {
 
     bool Load(std::string path);
 
-		void Add(Canvas *object);
-
-		void Remove(Canvas *object);
+		jgui::Image * GetGraphicLayer();
 
 };
 

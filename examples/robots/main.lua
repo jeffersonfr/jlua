@@ -2,7 +2,7 @@ package.path = package.path .. ";?.lua"
 
 dofile("class.lua")
 
-layer0 = canvas.new()
+layer0 = canvas.new(1280, 720)
 
 screen_width, screen_height = layer0:size()
 
@@ -1105,6 +1105,8 @@ arena:reset()
 
 function render(tick)
 	arena:start()
+
+	canvas.compose(layer0, 0, 0, canvas.size())
 end
 
 -- arena:result()

@@ -17,52 +17,31 @@
  *   Free Software Foundation, Inc.,                                       *
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
-#ifndef LUA_EVENT_H
-#define LUA_EVENT_H
+#ifndef LUA_FONT_H
+#define LUA_FONT_H
 
-#include "jgui/jimage.h"
+#include "jgui/jfont.h"
 
 #include "utils.h"
 
 #include <chrono>
 
-class Event {
-
-	public:
-		struct key_state_t {
-			std::string
-				state;
-			std::chrono::steady_clock::time_point
-				timestamp;
-		};
-
-		struct pointer_state_t {
-			std::string
-				state;
-			std::chrono::steady_clock::time_point
-				timestamp;
-			jgui::jpoint_t<int>
-				position;
-			int
-				count;
-		};
+class Font {
 
 	public:
     static std::string
       global_name;
 
 	public:
-		static std::map<std::string, key_state_t>
-			keys;
-		static std::map<std::string, pointer_state_t>
-			pointers;
+		jgui::Font
+			*font;
 
 	public:
-		Event();
+		Font(int size);
 
-		~Event();
+		~Font();
 
-		static Event * Check(lua_State *l, int n);
+		static Font * Check(lua_State *l, int n);
 
 		static void Register(lua_State *l);
 

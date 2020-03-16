@@ -19,10 +19,12 @@
  ***************************************************************************/
 #include "jlua.h"
 #include "canvas.h"
+#include "font.h"
 #include "event.h"
+#include "utils.h"
 
 #include "jgui/japplication.h"
-#include "jgui/jgraphics.h"
+#include "jgui/jbufferedimage.h"
 
 extern "C" {
   #include <lua.h>
@@ -30,11 +32,15 @@ extern "C" {
   #include <lualib.h>
 }
 
-lua_State *l = nullptr;
+static lua_State 
+	*l = nullptr;
 
 jLua::jLua():
 	jgui::Window({1280, 720})
 {
+	_graphicLayer = new jgui::BufferedImage(jgui::JPF_ARGB, GetSize());
+
+	RegisterWindowListener(this);
 }
 
 jLua::~jLua()
@@ -90,7 +96,15 @@ std::string KeySymbolToString(jevent::jkeyevent_symbol_t param)
 
 std::string MouseButtonToString(jevent::jmouseevent_button_t param) 
 {
-	return "buton1";
+	if (param == jevent::JMB_BUTTON1) {
+		return "0";
+	} else if (param == jevent::JMB_BUTTON2) {
+		return "1";
+	} else if (param == jevent::JMB_BUTTON3) {
+		return "2";
+	}
+
+	return "unknown";
 }
 
 bool jLua::KeyPressed(jevent::KeyEvent *event)
@@ -114,7 +128,7 @@ bool jLua::KeyReleased(jevent::KeyEvent *event)
 bool jLua::MousePressed(jevent::MouseEvent *event)
 {
 	Event::pointers[MouseButtonToString(event->GetButton())] = {
-		"pressed", std::chrono::steady_clock::now(), event->GetLocation()
+		"pressed", std::chrono::steady_clock::now(), event->GetLocation(), event->GetClicks()
 	};
 
 	return true;
@@ -123,7 +137,7 @@ bool jLua::MousePressed(jevent::MouseEvent *event)
 bool jLua::MouseReleased(jevent::MouseEvent *event)
 {
 	Event::pointers[MouseButtonToString(event->GetButton())] = {
-		"released", std::chrono::steady_clock::now(), event->GetLocation()
+		"released", std::chrono::steady_clock::now(), event->GetLocation(), event->GetClicks()
 	};
 
 	return true;
@@ -131,15 +145,74 @@ bool jLua::MouseReleased(jevent::MouseEvent *event)
 
 bool jLua::MouseMoved(jevent::MouseEvent *event)
 {
-	Event::pointers[MouseButtonToString(event->GetButton())] = {
-		"moved", std::chrono::steady_clock::now(), event->GetLocation()
+	Event::pointers[MouseButtonToString(jevent::JMB_BUTTON1)] = {
+		"moved", std::chrono::steady_clock::now(), event->GetLocation(), event->GetClicks()
+	};
+
+	Event::pointers[MouseButtonToString(jevent::JMB_BUTTON2)] = {
+		"moved", std::chrono::steady_clock::now(), event->GetLocation(), event->GetClicks()
+	};
+
+	Event::pointers[MouseButtonToString(jevent::JMB_BUTTON3)] = {
+		"moved", std::chrono::steady_clock::now(), event->GetLocation(), event->GetClicks()
 	};
 
 	return true;
 }
 
+void jLua::WindowOpened(jevent::WindowEvent *event)
+{
+}
+
+void jLua::WindowClosing(jevent::WindowEvent *event)
+{
+}
+
+void jLua::WindowClosed(jevent::WindowEvent *event)
+{
+}
+
+void jLua::WindowResized(jevent::WindowEvent *event)
+{
+	jgui::Image
+		*newGraphicLayer = new jgui::BufferedImage(jgui::JPF_ARGB, GetSize());
+
+	newGraphicLayer->GetGraphics()->DrawImage(_graphicLayer, jgui::jpoint_t<int>{0, 0});
+
+	delete _graphicLayer;
+
+	_graphicLayer = newGraphicLayer;
+
+  // INFO:: call configure method in lua
+  if (lua_getglobal(l, "configure") != LUA_TNIL) {
+    if (lua_pcall(l, 0, 0, 0)) {
+      luaL_error(l, luaL_checkstring(l, -1));
+    }
+  } else {
+    lua_pop(l, -1);
+  }
+}
+
+void jLua::WindowMoved(jevent::WindowEvent *event)
+{
+}
+
+void jLua::WindowPainted(jevent::WindowEvent *event)
+{
+}
+
+void jLua::WindowEntered(jevent::WindowEvent *event)
+{
+}
+
+void jLua::WindowLeaved(jevent::WindowEvent *event)
+{
+}
+
 void jLua::Paint(jgui::Graphics *g)
 {
+	_lua_mutex.lock();
+
   static std::chrono::steady_clock::time_point
     last = std::chrono::steady_clock::now();
 
@@ -154,26 +227,17 @@ void jLua::Paint(jgui::Graphics *g)
   if (lua_getglobal(l, "render") != LUA_TNIL) {
     lua_pushnumber(l, tick);
 
-    if (lua_pcall(l, 1, 1, 0)) {
+    if (lua_pcall(l, 1, 0, 0)) {
       luaL_error(l, luaL_checkstring(l, -1));
     }
   } else {
     lua_pop(l, -1);
   }
+	
+	_lua_mutex.unlock();
 
   g->SetCompositeFlags(jgui::JCF_SRC_OVER);
-
-	_mutex.lock();
-
-	for (auto object : _objects) {
-		if (object->visible == false) {
-			continue;
-		}
-
-		g->DrawImage(object->image, {{0, 0}, object->image->GetSize()});
-	}
-
-	_mutex.unlock();
+	g->DrawImage(_graphicLayer, jgui::jpoint_t<int>{0, 0});
 
   Repaint();
 }
@@ -185,6 +249,7 @@ bool jLua::Load(std::string path)
 	luaL_openlibs(l);
 
 	Canvas::Register(l);
+	Font::Register(l);
 	Event::Register(l);
 	
 	if (luaL_dofile(l, path.c_str())) {
@@ -196,25 +261,7 @@ bool jLua::Load(std::string path)
   return true;
 }
 
-void jLua::Add(Canvas *object)
+jgui::Image * jLua::GetGraphicLayer()
 {
-	_mutex.lock();
-
-	_objects.push_back(object);
-
-	_mutex.unlock();
-}
-
-void jLua::Remove(Canvas *object)
-{
-	_mutex.lock();
-
-	decltype(_objects)::iterator 
-		i = std::find(_objects.begin(), _objects.end(), object);
-		
-	if (i != _objects.end()) {
-		_objects.erase(i);
-	}
-
-	_mutex.unlock();
+	return _graphicLayer;
 }

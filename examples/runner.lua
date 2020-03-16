@@ -1,4 +1,4 @@
-layer0 = canvas.new()
+layer0 = canvas.new(1280, 720)
 
 local w, h = layer0:size()
 
@@ -39,10 +39,14 @@ function render(tick)
 			layer0:rect("fill", w - SIZE - 60, (SIZE+8)*j, 10, SIZE)
 			layer0:rect("fill", w - SIZE-40, (SIZE+8)*j, 10, SIZE)
 
-			layer0:compose(runner, tab[j].i*rw, 0, rw, rh, tab[j].x+20, (SIZE+8)*j, SIZE, SIZE)
+			local index = math.floor(tab[j].i) % 9
 
-			tab[j].x = tab[j].x + math.random(100)*tick
-			tab[j].i = (tab[j].i + 1) % 9
+			layer0:compose(runner, index*rw, 0, rw, rh, tab[j].x+20, (SIZE+8)*j, SIZE, SIZE)
+
+			local random = math.random(64)
+			
+			tab[j].x = tab[j].x + random*tick
+			tab[j].i = tab[j].i + tick*(random/8 + 8)
 
 			if ((tab[j].x+SIZE) >= (w - SIZE - 20)) then
 				if (WIN == false) then
@@ -53,5 +57,7 @@ function render(tick)
 			end
 		end
 	end
+
+	canvas.compose(layer0, 0, 0, canvas.size())
 end
 

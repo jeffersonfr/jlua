@@ -1,4 +1,4 @@
-layer0 = canvas.new()
+layer0 = canvas.new(1280, 720)
 
 local w, h = layer0:size()
 
@@ -85,12 +85,10 @@ function render(tick)
 		win = 1
 
 		layer0:compose(iwinner, banana.x+banana.dx/2, banana.y+banana.dy/2)
-
-		--system.sleep(2*1000)
-
-		return
+	else
+		redraw()
 	end
 
-	redraw()
+	canvas.compose(layer0, 0, 0)
 end
 

@@ -22,11 +22,7 @@
 
 #include "jgui/jimage.h"
 
-extern "C" {
-	#include <lua.h>
-	#include <lauxlib.h>
-	#include <lualib.h>
-}
+#include "utils.h"
 
 class Canvas {
 
@@ -44,6 +40,8 @@ class Canvas {
 		Canvas(jgui::Image *image = nullptr);
 
 		~Canvas();
+
+		static Canvas * Check(lua_State *l, int n);
 
 		static void Register(lua_State *l);
 

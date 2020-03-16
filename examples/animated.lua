@@ -1,4 +1,4 @@
-layer0 = canvas.new()
+layer0 = canvas.new(1920, 1080)
 
 logo = canvas.new("images/canvas.png")
 
@@ -25,4 +25,6 @@ function render(tick)
   layer0:compose(logo, 600 + i + 50, 600 + j + 50, 100, 100)
 
   count = count + tick
+
+	canvas.compose(layer0, 0, 0)
 end

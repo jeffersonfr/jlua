@@ -1,9 +1,13 @@
-layer0 = canvas.new()
+layer0 = canvas.new(1920, 1080)
 
 c1 = "black"
 c2 = "white"
 c3 = "green"
 size = 16
+
+colors = {}
+ncolors = 512
+sixth = math.floor(ncolors/6.0)
 
 layer0:color(c1)
 layer0:pen(-size)
@@ -71,10 +75,6 @@ layer0:arc("draw", 1300, 800, 200, 100)
 layer0:color(c3)
 layer0:arc("fill", 1300, 800, 100, 50)
 
-colors = {}
-ncolors = 512
-sixth = math.floor(ncolors/6.0)
-
 for i=1,ncolors do 
 	if (i <= 2*sixth) then
 		colors[#colors+1] = 0
@@ -103,3 +103,8 @@ for i=0,ncolors do
 	layer0:line(1750, 100+i, 1850, 100+i)
 end
 
+function configure()
+	canvas.compose(layer0, 0, 0)
+end
+
+configure()

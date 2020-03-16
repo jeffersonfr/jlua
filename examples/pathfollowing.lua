@@ -1,4 +1,4 @@
-layer0 = canvas.new()
+layer0 = canvas.new(1280, 720)
 
 local w, h = layer0:size()
 
@@ -283,5 +283,7 @@ function render(tick)
 		end
 
 		robot.walk()
+
+		canvas.compose(layer0, 0, 0)
 end
 
