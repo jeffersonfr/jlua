@@ -23,11 +23,8 @@
 
 #include "jgui/jbufferedimage.h"
 
-std::string
-  Canvas::global_name = "canvas";
-
 static const std::string
-  local_name = std::string("luaL_") + Canvas::global_name;
+  METATABLE = "luaL_canvas";
 
 int lua_Canvas_new(lua_State *l)
 {
@@ -54,7 +51,7 @@ int lua_Canvas_new(lua_State *l)
 		(*udata)->image->GetGraphics()->SetFont(&jgui::Font::NORMAL);
   }
 
-	luaL_getmetatable(l, local_name.c_str());
+	luaL_getmetatable(l, METATABLE.c_str());
 	lua_setmetatable(l, -2);
 
 	return 1;
@@ -605,7 +602,7 @@ static int lua_Canvas_scale(lua_State *l)
 
     *udata = new Canvas(canvas->image->Scale({w, h}));
 
-    luaL_getmetatable(l, local_name.c_str());
+    luaL_getmetatable(l, METATABLE.c_str());
     lua_setmetatable(l, -2);
 
 		return 1;
@@ -630,7 +627,7 @@ static int lua_Canvas_rotate(lua_State *l)
 
     *udata = new Canvas(canvas->image->Rotate(degrees*M_PI/180.0f, false));
 
-    luaL_getmetatable(l, local_name.c_str());
+    luaL_getmetatable(l, METATABLE.c_str());
     lua_setmetatable(l, -2);
 
 		return 1;
@@ -645,7 +642,7 @@ static int lua_Canvas_rotate(lua_State *l)
 
     *udata = new Canvas(canvas->image->Rotate(degrees*M_PI/180.0f, method == "contains"?false:true));
 
-    luaL_getmetatable(l, local_name.c_str());
+    luaL_getmetatable(l, METATABLE.c_str());
     lua_setmetatable(l, -2);
 
 		return 1;
@@ -673,7 +670,7 @@ static int lua_Canvas_crop(lua_State *l)
 
     *udata = new Canvas(canvas->image->Crop({x, y, w, h}));
 
-    luaL_getmetatable(l, local_name.c_str());
+    luaL_getmetatable(l, METATABLE.c_str());
     lua_setmetatable(l, -2);
 
 		return 1;
@@ -774,7 +771,7 @@ Canvas::~Canvas()
 
 Canvas * Canvas::Check(lua_State *l, int n)
 {
-	return *(Canvas **)luaL_checkudata(l, n, local_name.c_str());
+	return *(Canvas **)luaL_checkudata(l, n, METATABLE.c_str());
 }
 
 void Canvas::Register(lua_State *l)
@@ -801,10 +798,10 @@ void Canvas::Register(lua_State *l)
 			{ NULL, NULL }
 		};
 
-	luaL_newmetatable(l, local_name.c_str());
+	luaL_newmetatable(l, METATABLE.c_str());
 	luaL_setfuncs(l, sCanvasRegs, 0);
 	lua_pushvalue(l, -1);
 	lua_setfield(l, -1, "__index");
-	lua_setglobal(l, Canvas::global_name.c_str());
+	lua_setglobal(l, METATABLE.substr(5).c_str());
 }
 

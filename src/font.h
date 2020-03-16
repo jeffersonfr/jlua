@@ -29,10 +29,6 @@
 class Font {
 
 	public:
-    static std::string
-      global_name;
-
-	public:
 		jgui::Font
 			*font;
 

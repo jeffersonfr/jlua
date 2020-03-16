@@ -27,10 +27,6 @@
 class Canvas {
 
 	public:
-    static std::string
-      global_name;
-
-	public:
 		jgui::Image
 			*image;
 		bool

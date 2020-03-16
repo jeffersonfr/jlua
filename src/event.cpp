@@ -22,16 +22,13 @@
 
 #include "jgui/jbufferedimage.h"
 
-std::string
-  Event::global_name = "event";
-
 std::map<std::string, Event::key_state_t>
 	Event::keys;
 std::map<std::string, Event::pointer_state_t>
 	Event::pointers;
 
 static const std::string
-  local_name = std::string("luaL_") + Event::global_name;
+  METATABLE = "luaL_event";
 
 int lua_Event_key(lua_State *l)
 {
@@ -128,7 +125,7 @@ Event::~Event()
 
 Event * Event::Check(lua_State *l, int n)
 {
-	return *(Event **)luaL_checkudata(l, n, local_name.c_str());
+	return *(Event **)luaL_checkudata(l, n, METATABLE.c_str());
 }
 
 void Event::Register(lua_State *l)
@@ -140,10 +137,10 @@ void Event::Register(lua_State *l)
 			{ NULL, NULL }
 		};
 
-	luaL_newmetatable(l, local_name.c_str());
+	luaL_newmetatable(l, METATABLE.c_str());
 	luaL_setfuncs(l, sEventRegs, 0);
 	lua_pushvalue(l, -1);
 	lua_setfield(l, -1, "__index");
-	lua_setglobal(l, Event::global_name.c_str());
+	lua_setglobal(l, METATABLE.substr(5).c_str());
 }
 

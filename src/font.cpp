@@ -20,11 +20,8 @@
 #include "font.h"
 #include "jlua.h"
 
-std::string
-  Font::global_name = "font";
-
 static const std::string
-  local_name = std::string("luaL_") + Font::global_name;
+  METATABLE = "luaL_font";
 
 static int lua_Font_new(lua_State *l)
 {
@@ -38,7 +35,7 @@ static int lua_Font_new(lua_State *l)
     *udata = new Font(size);
   }
 
-	luaL_getmetatable(l, local_name.c_str());
+	luaL_getmetatable(l, METATABLE.c_str());
 	lua_setmetatable(l, -2);
 
 	return 1;
@@ -110,7 +107,7 @@ Font::~Font()
 
 Font * Font::Check(lua_State *l, int n)
 {
-	return *(Font **)luaL_checkudata(l, n, local_name.c_str());
+	return *(Font **)luaL_checkudata(l, n, METATABLE.c_str());
 }
 
 void Font::Register(lua_State *l)
@@ -124,10 +121,10 @@ void Font::Register(lua_State *l)
 			{ NULL, NULL }
 		};
 
-	luaL_newmetatable(l, local_name.c_str());
+	luaL_newmetatable(l, METATABLE.c_str());
 	luaL_setfuncs(l, sFontRegs, 0);
 	lua_pushvalue(l, -1);
 	lua_setfield(l, -1, "__index");
-	lua_setglobal(l, Font::global_name.c_str());
+	lua_setglobal(l, METATABLE.substr(5).c_str());
 }
 

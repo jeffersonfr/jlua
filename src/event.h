@@ -48,10 +48,6 @@ class Event {
 		};
 
 	public:
-    static std::string
-      global_name;
-
-	public:
 		static std::map<std::string, key_state_t>
 			keys;
 		static std::map<std::string, pointer_state_t>
