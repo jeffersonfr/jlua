@@ -70,26 +70,21 @@ int lua_Canvas_gc(lua_State *l)
 
 static int lua_Canvas_size(lua_State *l)
 {
+	Canvas 
+		*canvas = Canvas::Check(l, 1);
   jgui::jsize_t<int>
-    size {0, 0};
-		
-	if (lua_gettop(l) == 0) {
-		size = jLua::Instance().GetGraphicLayer()->GetSize();
-	} else if (lua_gettop(l) == 1) {
-		Canvas 
-			*canvas = Canvas::Check(l, 1);
-			
-		size = canvas->image->GetSize();
-	} else {
-		lua_dump(l, "canvas:size() => invalid parameters");
+    size = canvas->image->GetSize();
 
-		return 0;
+	if (lua_gettop(l) == 1) {
+		lua_pushinteger(l, size.width);
+		lua_pushinteger(l, size.height);
+
+		return 2;
 	}
 
-	lua_pushinteger(l, size.width);
-	lua_pushinteger(l, size.height);
+	lua_dump(l, "canvas:size() => invalid parameters");
 
-	return 2;
+	return 0;
 }
 
 static int lua_Canvas_clear(lua_State *l)
