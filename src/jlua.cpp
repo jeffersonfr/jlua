@@ -26,6 +26,8 @@
 #include "jgui/japplication.h"
 #include "jgui/jbufferedimage.h"
 
+#include <filesystem>
+
 extern "C" {
   #include <lua.h>
   #include <lauxlib.h>
@@ -242,8 +244,62 @@ void jLua::Paint(jgui::Graphics *g)
   Repaint();
 }
 
+void jLua::Initialize()
+{
+  lua_createtable(l, 2, 0);
+
+  lua_pushstring(l, R"(
+    Copyright (C) 2010 by Jeff Ferr
+    
+    This program is free software; you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation; either version 2 of the License, or
+    (at your option) any later version.
+    
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+    
+    You should have received a copy of the GNU General Public License
+    along with this program; if not, write to the
+    Free Software Foundation, Inc.,
+    59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.)");
+  lua_setfield(l, -2, "license");
+
+  lua_pushstring(l, "api");
+  lua_setfield(l, -2, "type");
+
+  lua_pushstring(l, "jlua");
+  lua_setfield(l, -2, "name");
+
+  lua_pushstring(l, "0.0.1");
+  lua_setfield(l, -2, "version");
+
+  lua_pushstring(l, "jlua game engine");
+  lua_setfield(l, -2, "description");
+
+  lua_pushstring(l, "https://github.com/jlua");
+  lua_setfield(l, -2, "url");
+
+  lua_pushstring(l, base.c_str());
+  lua_setfield(l, -2, "base");
+
+  lua_setglobal(l, "jlua");
+	
+  luaL_dofile(l, "scripts/config.lua");
+}
+
 bool jLua::Load(std::string path)
 {
+  // INFO:: set the base directory
+  base = std::filesystem::path(path).remove_filename();
+
+  if (base.empty() == true) {
+    base = ".";
+  }
+
+  // INFO:: create the lua state
   l = luaL_newstate();
 
 	luaL_openlibs(l);
@@ -252,6 +308,8 @@ bool jLua::Load(std::string path)
 	Font::Register(l);
 	Event::Register(l);
 	
+  Initialize();
+
 	if (luaL_dofile(l, path.c_str())) {
     std::cout << luaL_checkstring(l, -1) << std::endl;
     

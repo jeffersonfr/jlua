@@ -1,7 +1,5 @@
 package.path = package.path .. ";?.lua"
 
-dofile("class.lua")
-
 layer0 = canvas.new(1280, 720)
 
 screen_width, screen_height = layer0:size()

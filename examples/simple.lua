@@ -15,3 +15,6 @@ end
 
 configure()
 
+for k,v in pairs(jlua) do
+  print(k, v)
+end

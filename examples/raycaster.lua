@@ -11,7 +11,7 @@ config = {
 	wall_zoom = 600, -- how much to zoom the walls, play with to see results
 	player_speed = 0.2, -- how fast the player moves forward
 	player_turn = 8, -- how fast the player turns
-	fish_eye = true -- should the engine remove the "fish eye" side effect?
+	fish_eye = false -- should the engine remove the "fish eye" side effect?
 }
 
 -- don't change this stuff

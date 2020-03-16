@@ -28,13 +28,11 @@ class Canvas;
 
 class jLua : public jgui::Window, jevent::WindowListener {
 
-	public://private:
+	private:
 		jgui::Image
 			*_graphicLayer;
 		std::mutex
 			_lua_mutex;
-    std::string
-      _path;
 
 	private:
 		virtual bool KeyPressed(jevent::KeyEvent *event);
@@ -54,12 +52,18 @@ class jLua : public jgui::Window, jevent::WindowListener {
 
 		virtual void Paint(jgui::Graphics *g);
 
+  public:
+    std::string
+      base;
+
 	public:
 		jLua();
 
 		virtual ~jLua();
 
 		static jLua & Instance();
+
+    void Initialize();
 
     bool Load(std::string path);
 

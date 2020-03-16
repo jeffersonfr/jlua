@@ -21,6 +21,7 @@
 #include "font.h"
 #include "jlua.h"
 
+#include "jcommon/jstringutils.h"
 #include "jgui/jbufferedimage.h"
 
 static const std::string
@@ -35,7 +36,7 @@ int lua_Canvas_new(lua_State *l)
     Canvas
       **udata = (Canvas **)lua_newuserdata(l, sizeof(Canvas *));
 
-    *udata = new Canvas(new jgui::BufferedImage(path));
+    *udata = new Canvas(new jgui::BufferedImage(jLua::Instance().base + "/" + path));
 	
 		(*udata)->image->GetGraphics()->SetFont(&jgui::Font::NORMAL);
   } else if (lua_gettop(l) == 2) { // INFO:(w, h): create a image buffer to be used during the execution
