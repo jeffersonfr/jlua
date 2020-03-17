@@ -18,6 +18,7 @@
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
 #include "jlua.h"
+#include "display.h"
 #include "canvas.h"
 #include "font.h"
 #include "event.h"
@@ -213,6 +214,8 @@ void jLua::WindowLeaved(jevent::WindowEvent *event)
 
 void jLua::Paint(jgui::Graphics *g)
 {
+  jgui::Window::Paint(g);
+
 	_lua_mutex.lock();
 
   static std::chrono::steady_clock::time_point
@@ -304,6 +307,7 @@ bool jLua::Load(std::string path)
 
 	luaL_openlibs(l);
 
+	Display::Register(l);
 	Canvas::Register(l);
 	Font::Register(l);
 	Event::Register(l);

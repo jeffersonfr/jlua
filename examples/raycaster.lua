@@ -175,6 +175,6 @@ function render(tick)
 	
 	redraw()
 
-	canvas.compose(layer0, 0, 0, canvas.size())
+	canvas.compose(layer0, 0, 0, display.size())
 end
 

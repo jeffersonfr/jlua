@@ -58,6 +58,6 @@ function render(tick)
 		end
 	end
 
-	canvas.compose(layer0, 0, 0, canvas.size())
+	canvas.compose(layer0, 0, 0, display.size())
 end
 

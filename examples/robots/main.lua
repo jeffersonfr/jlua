@@ -1104,7 +1104,7 @@ arena:reset()
 function render(tick)
 	arena:start()
 
-	canvas.compose(layer0, 0, 0, canvas.size())
+	canvas.compose(layer0, 0, 0, display.size())
 end
 
 -- arena:result()

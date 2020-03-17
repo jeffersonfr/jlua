@@ -633,7 +633,7 @@ function FadeTransition:draw()
 		return false
 	end
 
-	local size = canvas.size()
+	local size = display.size()
 
 	canvas.color(self._color)
 

@@ -150,9 +150,9 @@ function robot.draw()
 
 	layer0:color("red")
 	layer0:triangle("fill", 
-		robot.location.x + points[1].x, robot.location.y +points[1].y,
-		robot.location.x + points[2].x, robot.location.y +points[2].y,
-		robot.location.x + points[3].x, robot.location.y +points[3].y
+		robot.location.x + points[1].x, robot.location.y + points[1].y,
+		robot.location.x + points[2].x, robot.location.y + points[2].y,
+		robot.location.x + points[3].x, robot.location.y + points[3].y
 	)
 	layer0:color("black")
 	layer0:triangle("fill", 
@@ -166,10 +166,10 @@ function robot.draw()
 	grey = robot.camera.capture()
 
 	for i=1,#grey do
-		array[#array+1] = grey[i]
-		array[#array+1] = grey[i]
-		array[#array+1] = grey[i]
-		array[#array+1] = 0xff
+		array[#array + 1] = grey[i]
+		array[#array + 1] = grey[i]
+		array[#array + 1] = grey[i]
+		array[#array + 1] = 0xff
 	end
 
 	local buffer = canvas.new(robot.camera.size.width, robot.camera.size.height)
@@ -177,19 +177,19 @@ function robot.draw()
 	-- TODO::buffer:pixels(array, 0, 0, robot.camera.size.width, robot.camera.size.height)
 
 	layer0:color("black")
-	layer0:rect("draw", arena.size.width-200, 50, 200, 160)
-	layer0:text("sensors", arena.size.width-180, 60)
+	layer0:rect("draw", arena.size.width - 200, 50, 200, 160)
+	layer0:text("sensors", arena.size.width - 180, 60)
 	
 	-- sensors.camera
-	layer0:compose(buffer, arena.size.width-180, 120, 64, 64)
-	layer0:rect("draw", arena.size.width-180, 120, 64, 64)
+	layer0:compose(buffer, arena.size.width - 180, 120, 64, 64)
+	layer0:rect("draw", arena.size.width - 180, 120, 64, 64)
 	
 	-- sensors.angle
-	local degrees = math.fmod(360-angles_table[robot.angle.index].degrees, 360)
+	local degrees = math.fmod(360 - angles_table[robot.angle.index].degrees, 360)
 	local tl, tr, bl, br = get_path_values()
 
-	layer0:text("" .. tl .. ", " .. tr, arena.size.width-96, 120)
-	layer0:text("" .. bl .. ", " .. br, arena.size.width-96, 120+32)
+	layer0:text("" .. tl .. ", " .. tr, arena.size.width - 96, 120)
+	layer0:text("" .. bl .. ", " .. br, arena.size.width - 96, 120 + 32)
 end
 
 function random_robot()

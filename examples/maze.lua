@@ -120,7 +120,7 @@ end
 moveFrom(2,2)
 
 function configure()
-	canvas.compose(layer0, 0, 0, canvas.size())
+	canvas.compose(layer0, 0, 0, display.size())
 end
 
 configure()
