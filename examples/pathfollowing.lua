@@ -176,9 +176,10 @@ function robot.draw()
 
 	-- TODO::buffer:pixels(array, 0, 0, robot.camera.size.width, robot.camera.size.height)
 
-	layer0:color("black")
-	layer0:rect("draw", arena.size.width - 200, 50, 200, 160)
-	layer0:text("sensors", arena.size.width - 180, 60)
+	layer0:color(0xa0404040)
+	layer0:rect("fill", arena.size.width - 200, 50, 200, 160)
+	layer0:color("white")
+	layer0:text("camera", arena.size.width - 180, 60)
 	
 	-- sensors.camera
 	layer0:compose(buffer, arena.size.width - 180, 120, 64, 64)

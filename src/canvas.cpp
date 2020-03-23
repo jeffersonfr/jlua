@@ -47,7 +47,7 @@ int lua_Canvas_new(lua_State *l)
     Canvas
       **udata = (Canvas **)lua_newuserdata(l, sizeof(Canvas *));
 
-    *udata = new Canvas(new jgui::BufferedImage(jgui::JPF_RGB32, {w, h}));
+    *udata = new Canvas(new jgui::BufferedImage(jgui::JPF_ARGB, {w, h}));
 		
 		(*udata)->image->GetGraphics()->SetFont(&jgui::Font::NORMAL);
   }
@@ -688,9 +688,10 @@ static int lua_Canvas_compose(lua_State *l)
 	
 	if (lua_gettop(l)%2 == 0) {
 		canvas = Canvas::Check(l, 1);
+
     g = canvas->image->GetGraphics();
 	} else {
-		g = jLua::Instance().GetGraphicLayer()->GetGraphics();
+		g = jLua::Instance().GetGraphicLayer();
 
 		offset = 1;
 	}
@@ -755,8 +756,12 @@ static int lua_Canvas_compose(lua_State *l)
 }
 
 Canvas::Canvas(jgui::Image *image):
-  image(image?image:new jgui::BufferedImage(jgui::JPF_RGB32, jLua::Instance().GetSize()))
+  image(image)
 {
+  if (image == nullptr) {
+    throw std::runtime_error("Image must be valid");
+  }
+
 	visible = true;
 }
 

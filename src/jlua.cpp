@@ -41,8 +41,6 @@ static lua_State
 jLua::jLua():
 	jgui::Window({1280, 720})
 {
-	_graphicLayer = new jgui::BufferedImage(jgui::JPF_ARGB, GetSize());
-
 	RegisterWindowListener(this);
 }
 
@@ -56,6 +54,29 @@ jLua & jLua::Instance()
 	static jLua instance;
 
 	return instance;
+}
+
+void ModifiersToString(jevent::jkeyevent_modifiers_t param)
+{
+	Event::keys["alt"] = {
+		"released", std::chrono::steady_clock::now()
+	};
+
+	Event::keys["ctrl"] = {
+		"released", std::chrono::steady_clock::now()
+	};
+
+  if ((jevent::jkeyevent_modifiers_t)(param & jevent::JKM_ALT)) {
+    Event::keys["alt"] = {
+      "pressed", std::chrono::steady_clock::now()
+    };
+  }
+  
+  if ((jevent::jkeyevent_modifiers_t)(param & jevent::JKM_CONTROL)) {
+    Event::keys["ctrol"] = {
+      "pressed", std::chrono::steady_clock::now()
+    };
+  }
 }
 
 std::string KeySymbolToString(jevent::jkeyevent_symbol_t param) 
@@ -84,6 +105,58 @@ std::string KeySymbolToString(jevent::jkeyevent_symbol_t param)
 		return "9";
 	} else if (param == jevent::JKS_0) {
 		return "0";
+	} else if (param == jevent::JKS_a) {
+		return "a";
+	} else if (param == jevent::JKS_b) {
+		return "b";
+	} else if (param == jevent::JKS_c) {
+		return "c";
+	} else if (param == jevent::JKS_d) {
+		return "d";
+	} else if (param == jevent::JKS_e) {
+		return "e";
+	} else if (param == jevent::JKS_f) {
+		return "f";
+	} else if (param == jevent::JKS_g) {
+		return "g";
+	} else if (param == jevent::JKS_h) {
+		return "h";
+	} else if (param == jevent::JKS_i) {
+		return "i";
+	} else if (param == jevent::JKS_j) {
+		return "j";
+	} else if (param == jevent::JKS_k) {
+		return "k";
+	} else if (param == jevent::JKS_l) {
+		return "l";
+	} else if (param == jevent::JKS_m) {
+		return "m";
+	} else if (param == jevent::JKS_n) {
+		return "n";
+	} else if (param == jevent::JKS_o) {
+		return "o";
+	} else if (param == jevent::JKS_p) {
+		return "p";
+	} else if (param == jevent::JKS_q) {
+		return "q";
+	} else if (param == jevent::JKS_r) {
+		return "r";
+	} else if (param == jevent::JKS_s) {
+		return "s";
+	} else if (param == jevent::JKS_t) {
+		return "t";
+	} else if (param == jevent::JKS_u) {
+		return "u";
+	} else if (param == jevent::JKS_v) {
+		return "v";
+	} else if (param == jevent::JKS_w) {
+		return "w";
+	} else if (param == jevent::JKS_x) {
+		return "x";
+	} else if (param == jevent::JKS_y) {
+		return "y";
+	} else if (param == jevent::JKS_z) {
+		return "z";
 	} else if (param == jevent::JKS_CURSOR_LEFT) {
 		return "left";
 	} else if (param == jevent::JKS_CURSOR_RIGHT) {
@@ -92,7 +165,7 @@ std::string KeySymbolToString(jevent::jkeyevent_symbol_t param)
 		return "up";
 	} else if (param == jevent::JKS_CURSOR_DOWN) {
 		return "down";
-	}
+  }
 
 	return "unknown";
 }
@@ -116,6 +189,8 @@ bool jLua::KeyPressed(jevent::KeyEvent *event)
 		"pressed", std::chrono::steady_clock::now()
 	};
 
+	ModifiersToString(event->GetModifiers());
+
 	return true;
 }
 
@@ -124,6 +199,8 @@ bool jLua::KeyReleased(jevent::KeyEvent *event)
 	Event::keys[KeySymbolToString(event->GetSymbol())] = {
 		"released", std::chrono::steady_clock::now()
 	};
+
+	ModifiersToString(event->GetModifiers());
 
 	return true;
 }
@@ -177,15 +254,6 @@ void jLua::WindowClosed(jevent::WindowEvent *event)
 
 void jLua::WindowResized(jevent::WindowEvent *event)
 {
-	jgui::Image
-		*newGraphicLayer = new jgui::BufferedImage(jgui::JPF_ARGB, GetSize());
-
-	newGraphicLayer->GetGraphics()->DrawImage(_graphicLayer, jgui::jpoint_t<int>{0, 0});
-
-	delete _graphicLayer;
-
-	_graphicLayer = newGraphicLayer;
-
   // INFO:: call configure method in lua
   if (lua_getglobal(l, "configure") != LUA_TNIL) {
     if (lua_pcall(l, 0, 0, 0)) {
@@ -218,6 +286,8 @@ void jLua::Paint(jgui::Graphics *g)
 
 	_lua_mutex.lock();
 
+  _graphicLayer = g;
+
   static std::chrono::steady_clock::time_point
     last = std::chrono::steady_clock::now();
 
@@ -242,7 +312,6 @@ void jLua::Paint(jgui::Graphics *g)
 	_lua_mutex.unlock();
 
   g->SetCompositeFlags(jgui::JCF_SRC_OVER);
-	g->DrawImage(_graphicLayer, jgui::jpoint_t<int>{0, 0});
 
   Repaint();
 }
@@ -323,7 +392,7 @@ bool jLua::Load(std::string path)
   return true;
 }
 
-jgui::Image * jLua::GetGraphicLayer()
+jgui::Graphics * jLua::GetGraphicLayer()
 {
 	return _graphicLayer;
 }

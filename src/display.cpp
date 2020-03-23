@@ -26,7 +26,7 @@ static const std::string
 static int lua_Display_size(lua_State *l)
 {
   jgui::jsize_t<int>
-    size = jLua::Instance().GetGraphicLayer()->GetSize();
+    size = jLua::Instance().GetSize();
 		
 	if (lua_gettop(l) == 0) {
 		lua_pushinteger(l, size.width);

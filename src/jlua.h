@@ -29,8 +29,8 @@ class Canvas;
 class jLua : public jgui::Window, jevent::WindowListener {
 
 	private:
-		jgui::Image
-			*_graphicLayer;
+    jgui::Graphics
+      *_graphicLayer;
 		std::mutex
 			_lua_mutex;
 
@@ -67,7 +67,7 @@ class jLua : public jgui::Window, jevent::WindowListener {
 
     bool Load(std::string path);
 
-		jgui::Image * GetGraphicLayer();
+		jgui::Graphics * GetGraphicLayer();
 
 };
 
