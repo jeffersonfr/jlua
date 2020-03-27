@@ -1,135 +1,202 @@
-local fov = 60*math.pi/180
-local strip = 12
-
 local map = {
   grid = {
-    {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
-    {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 1},
-    {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 1},
-    {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 1},
-    {1, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-    {1, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-    {1, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-    {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-    {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-    {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-    {1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 1},
-    {1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 1},
-    {1, 0, 1, 1, 1, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 1},
-    {1, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-    {1, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-    {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
+    {0x0200, 0x0200, 0x0200, 0x0200, 0x0200, 0x0200, 0x0200, 0x0200, 0x0200, 0x0200, 0x0200, 0x0200, 0x0200, 0x0200, 0x0200, 0x0200},
+    {0x0200, 0x1000, 0x1000, 0x1000, 0x1000, 0x1000, 0x1000, 0x1000, 0x1000, 0x1000, 0x0200, 0x1000, 0x0200, 0x1000, 0x1000, 0x0200},
+    {0x0200, 0x1000, 0x1000, 0x1000, 0x1000, 0x1000, 0x1000, 0x1000, 0x1000, 0x1000, 0x0200, 0x1000, 0x0200, 0x1000, 0x1000, 0x0200},
+    {0x0200, 0x1000, 0x1000, 0x1000, 0x1000, 0x1000, 0x1000, 0x1000, 0x1000, 0x1000, 0x0200, 0x1300, 0x0200, 0x1000, 0x1000, 0x0200},
+    {0x0200, 0x1000, 0x0202, 0x0202, 0x0202, 0x1000, 0x1000, 0x1000, 0x1000, 0x1000, 0x1000, 0x1000, 0x1000, 0x1000, 0x1000, 0x0200},
+    {0x0200, 0x1000, 0x0202, 0x1000, 0x2310, 0x1000, 0x1000, 0x1000, 0x1000, 0x1000, 0x1000, 0x1000, 0x1000, 0x1000, 0x1000, 0x0200},
+    {0x0200, 0x1000, 0x0202, 0x0202, 0x0202, 0x1000, 0x1000, 0x1000, 0x1000, 0x1000, 0x1000, 0x1000, 0x1000, 0x1000, 0x1000, 0x0200},
+    {0x0200, 0x1000, 0x1000, 0x1000, 0x1000, 0x1000, 0x1000, 0x1000, 0x1000, 0x1000, 0x1000, 0x1000, 0x1000, 0x1000, 0x1000, 0x0200},
+    {0x0200, 0x1000, 0x1000, 0x1000, 0x1000, 0x1000, 0x1000, 0x1000, 0x1000, 0x1000, 0x1000, 0x1000, 0x1000, 0x1000, 0x1000, 0x0200},
+    {0x0200, 0x1000, 0x1000, 0x1000, 0x1000, 0x1000, 0x1000, 0x1000, 0x1000, 0x1000, 0x1000, 0x1000, 0x1000, 0x1000, 0x1000, 0x0200},
+    {0x0200, 0x1000, 0x1000, 0x1000, 0x1000, 0x1000, 0x1000, 0x1000, 0x1000, 0x0201, 0x0201, 0x0201, 0x1000, 0x1000, 0x1000, 0x0200},
+    {0x0200, 0x1000, 0x1000, 0x1000, 0x1000, 0x1000, 0x1000, 0x1000, 0x1000, 0x0301, 0x1000, 0x0201, 0x1000, 0x1000, 0x1000, 0x0200},
+    {0x0200, 0x1000, 0x0200, 0x1300, 0x0200, 0x1000, 0x1000, 0x1000, 0x1000, 0x0201, 0x0201, 0x0201, 0x1000, 0x1000, 0x1000, 0x0200},
+    {0x0200, 0x1000, 0x0200, 0x1000, 0x0200, 0x1000, 0x1000, 0x1000, 0x1000, 0x1000, 0x1000, 0x1000, 0x1000, 0x1000, 0x1000, 0x0200},
+    {0x0200, 0x1000, 0x0200, 0x1000, 0x0200, 0x1000, 0x1000, 0x1000, 0x1000, 0x1000, 0x1000, 0x1000, 0x1000, 0x1000, 0x1000, 0x0200},
+    {0x0200, 0x0200, 0x0200, 0x0200, 0x0200, 0x0200, 0x0200, 0x0200, 0x0200, 0x0200, 0x0200, 0x0200, 0x0200, 0x0200, 0x0200, 0x0200},
   },
-  block = 32,
+  block = 16,
+  strip = 4,
+  minimap = false,
+  shadder = true,
+  texture = true,
+  fov = 45*math.pi/180
 }
 
-map.canvas = canvas.new(rawlen(map.grid[1])*map.block, rawlen(map.grid)*map.block)
+display.size(640, 480)
 
-map.render = function(self)
-  map.canvas:clear()
-  map.canvas:color("white")
+map.canvas2d = canvas.new(#map.grid[1]*map.block, #map.grid*map.block)
 
-  for j=1,rawlen(map.grid) do
-    for i=1,rawlen(map.grid[j]) do
-      map.canvas:rect("draw", (i - 1)*map.block, (j - 1)*map.block, map.block, map.block)
+local dw, dh = display.size()
+local w2, h2 = map.canvas2d:size()
 
-      if map.grid[j][i] == 1 then
-        map.canvas:rect("fill", (i - 1)*map.block, (j - 1)*map.block, map.block, map.block)
-      end
-    end
-  end
-end
+local door_01 = canvas.new("images/door-01.png")
 
-local x, y = map.canvas:size()
+map.textures = {
+  [0x0200] = canvas.new("images/wall.png"),
+  [0x0201] = canvas.new("images/wood.png"),
+  [0x0202] = canvas.new("images/greystone.png"),
+  [0x0300] = canvas.new("images/wall-hole.png"),
+  [0x0301] = canvas.new("images/wood-hole.png"),
+  [0x0302] = canvas.new("images/greystone-hole.png"),
+  [0x0310] = door_01:crop(0*32, 0, 32, 32), -- open/close door
+  [0x0311] = door_01:crop(1*32, 0, 32, 32),
+  [0x0312] = door_01:crop(2*32, 0, 32, 32),
+  [0x0313] = door_01:crop(3*32, 0, 32, 32),
+  [0x0400] = canvas.new("images/parallax.png")
+}
 
-local player = {
-  x = x/2, 
-  y = y/2,
+map.animations = {
+}
+
+local game = {
+  x = w2/2, 
+  y = h2/2,
   radians = 0.0,
   walkSpeed = 128.0,
   rotationSpeed = math.pi,
-  fieldOfView = math.pi/4
+  fieldOfView = math.pi/4,
+	rays = {}, -- rays.transparent = {}: transparent walls until the solid block
 }
 
-player.findHorizontalIntersections = function(self, angle, up, left)
-  local xintersect, yintersect, xstep, ystep
+game.findHorizontalIntersections = function(self, angle, up, left, correction, rangeStart, rangeEnd)
+  local xintersect, yintersect, xstep, ystep = 9999, 9999, 9999, 9999
 
-  if (up == true) then
-    yintersect = map.block*math.floor((player.y)/map.block)
-    ystep = -map.block
-  else
-    yintersect = map.block*math.floor((player.y + 32)/map.block)
-    ystep = map.block
+  yintersect = math.floor(game.y/map.block)*map.block
+  
+  if (up == false) then
+    yintersect = yintersect + map.block
   end
 
-  xintersect = player.x - (player.y - yintersect)/math.tan(angle)
-  xstep = ystep/math.tan(angle)
+  if angle ~= 0 then
+    xintersect = game.x + (yintersect - game.y)/math.tan(angle)
+  end
 
-  for i=0,100 do
-    local x = math.floor((xintersect + i*xstep)/map.block)
-    local y = math.floor((yintersect + i*ystep)/map.block)
+  if angle ~= 0 then
+    xstep = map.block/math.tan(angle)
 
-    if x < 0 or y < 0 or x >= rawlen(map.grid[1]) or y >= rawlen(map.grid) then
-      return 9999, 9999
-    end
-
-    if map.grid[y + 1][x + 1] == 1 or (up == true and map.grid[y + 0][x + 1] == 1) then
-      return xintersect + i*xstep, yintersect + i*ystep
+    if up == true then
+      xstep = -xstep
     end
   end
 
-  return 9999, 9999
+  ystep = map.block
+
+  if up == true then
+    ystep = -ystep
+  end
+
+  local x, y, w, h = 0, 0, w2, h2
+  local steps = math.floor(math.max(w, h)/map.block)
+
+  for i=0,steps do
+    x, y = xintersect + i*xstep, yintersect + i*ystep
+
+    if x <= 0 or x >= w or y <= 0 or y >= h then
+			return nil
+    end
+
+    local ix, iy = math.floor(x/map.block) + 1, math.floor(y/map.block) + 1
+    local d = math.sqrt((game.x - x)*(game.x - x) + (game.y - y)*(game.y - y)) * correction
+
+    -- solid walls
+    if (up == false and map.grid[iy] ~= nil) then
+      local id = map.grid[iy][ix] & 0x0fff
+      
+      if (id >= rangeStart and id < rangeEnd) then
+        return {x = x, y = y, distance = d, dir = 0, id = id}
+      end
+    end
+
+    if (up == true and map.grid[iy - 1] ~= nil) then
+      local id = map.grid[iy - 1][ix] & 0x0fff
+      
+      if (id >= rangeStart and id < rangeEnd) then
+        return {x = x, y = y, distance = d, dir = 0, id = id}
+      end
+    end
+  end
+
+	return nil
 end
 
-player.findVerticalIntersections = function(self, angle, up, left)
-  local xintersect, yintersect, xstep, ystep
+game.findVerticalIntersections = function(self, angle, up, left, correction, rangeStart, rangeEnd)
+  local xintersect, yintersect, xstep, ystep = 9999, 9999, 9999, 9999
 
-  if (left == true) then
-    xintersect = map.block*math.floor((player.x)/map.block)
-    xstep = -map.block
-  else
-    xintersect = map.block*math.floor((player.x + 32)/map.block)
-    xstep = map.block
+  xintersect = math.floor(game.x/map.block)*map.block
+  
+  if (left == false) then
+    xintersect = xintersect + map.block
   end
 
-  yintersect = player.x - (player.x - xintersect)*math.tan(angle)
-  ystep = xstep*math.tan(angle)
+  yintersect = game.y + (xintersect - game.x)*math.tan(angle)
 
-  for i=0,100 do
-    local x = math.floor((xintersect + i*xstep)/map.block)
-    local y = math.floor((yintersect + i*ystep)/map.block)
+  ystep = map.block*math.tan(angle)
 
-    if x < 0 or y < 0 or x >= rawlen(map.grid[1]) or y >= rawlen(map.grid) then
-      return 9999, 9999
+  if left == true then
+    ystep = -ystep
+  end
+
+  xstep = -map.block
+
+  if left == false then
+    xstep = -xstep
+  end
+
+  local x, y, w, h = 0, 0, w2, h2
+  local steps = math.floor(math.max(w, h)/map.block)
+
+  for i=0,steps do
+    x, y = xintersect + i*xstep, yintersect + i*ystep
+
+    if x <= 0 or x >= w or y <= 0 or y >= h then
+			return nil
     end
 
-    if map.grid[y + 1][x + 1] == 1 or (left == true and map.grid[y + 1][x + 0] == 1) then
-      return xintersect + i*xstep, yintersect + i*ystep
+    local ix, iy = math.floor(x/map.block) + 1, math.floor(y/map.block) + 1
+    local d = math.sqrt((game.x - x)*(game.x - x) + (game.y - y)*(game.y - y)) * correction
+
+    -- solid walls
+    if (left == false and map.grid[iy] ~= nil) then
+      local id = map.grid[iy][ix] & 0x0fff
+      
+      if (id >= rangeStart and id < rangeEnd) then
+        return {x = x, y = y, distance = d, dir = 1, id = id}
+      end
+    end
+    
+    if (left == true and map.grid[iy] ~= nil) then
+      local id = map.grid[iy][ix - 1] & 0x0fff
+      
+      if (id >= rangeStart and id < rangeEnd) then
+        return {x = x, y = y, distance = d, dir = 1, id = id}
+      end
     end
   end
 
-  return 9999, 9999
+	return nil
 end
 
-player.render = function(self)
-  map.canvas:color("green")
-  map.canvas:arc("fill", self.x, self.y, 16)
-  map.canvas:color("white")
-  map.canvas:arc("fill", self.x + math.cos(self.radians)*16, self.y + math.sin(self.radians)*16, 4)
+game.castRays = function(self)
+  local radians = math.fmod(game.radians, 2*math.pi) - map.fov/2.0
 
-  local angle = player.radians - fov/2.0
+	game.rays = {}
 
-  for i=0,360,strip do
-    angle = math.fmod(angle + fov*strip/360.0, 2*math.pi)
+  for i=0,w2,map.strip do
+    local angle = radians + i*map.fov/w2
 
     if angle < 0 then
       angle = angle + 2*math.pi
     end
 
+    angle = math.fmod(angle, 2*math.pi)
+
     local up = true
     local left = false
 
-    if angle > 0 and angle < math.pi then
+    if angle >= 0 and angle < math.pi then
       up = false
     end
 
@@ -137,74 +204,108 @@ player.render = function(self)
       left = true
     end
 
-    -- find horizontal intersection
-    local hx, hy = self:findHorizontalIntersections(angle, up, left)
-    local vx, vy = self:findVerticalIntersections(angle, up, left)
+    local correction = math.cos(-map.fov/2 + i*map.fov/w2) -- correct fish-eye effect
 
-    --[[
-    hx = math.floor(hx/map.block)*map.block
-    hy = math.floor(hy/map.block)*map.block
-    vx = math.floor(vx/map.block)*map.block
-    vy = math.floor(vy/map.block)*map.block
-    ]]
+    -- find intersection for solid block
+    local h = self:findHorizontalIntersections(angle, up, left, correction, 0x0200, 0x0300)
+    local v = self:findVerticalIntersections(angle, up, left, correction, 0x0200, 0x0300)
+    local intersection = h
 
-    local distH = (player.x - hx)*(player.x - hx) + (player.y - hy)*(player.y - hy)
-    local distV = (player.x - vx)*(player.x - vx) + (player.y - vy)*(player.y - vy)
-
-    if (distH < distV) then
-      map.canvas:color("blue")
-      map.canvas:line(player.x, player.y, hx, hy)
-    else
-      map.canvas:color("red")
-      map.canvas:line(player.x, player.y, vx, vy)
+    if (h == nil or (v ~= nil and v.distance < h.distance)) then
+      intersection = v
     end
 
-    -- find vertical intersection
+		game.rays[#game.rays + 1] = intersection
   end
 end
 
-function configure()
-  local w, h = display.size()
+game.render2d = function(self)
+  map.canvas2d:clear()
 
-  canvas.compose(map.canvas, 0, 0) --, canvas.size())
+  for j=1,#map.grid do
+    for i=1,#map.grid[j] do
+      local id = map.grid[j][i] & 0x0fff
+
+      -- draw floor 
+
+      if (id >= 0x0200) then
+        map.canvas2d:compose(map.textures[id], (i - 1)*map.block, (j - 1)*map.block, map.block, map.block)
+      end
+    end
+  end
+    
+  for i=1,#game.rays,map.strip do
+    local ray = game.rays[i]
+
+    if (ray.dir == 0) then
+      map.canvas2d:color("blue")
+    else
+      map.canvas2d:color("red")
+    end
+      
+    map.canvas2d:line(game.x, game.y, ray.x, ray.y)
+    
+    if ray.transparent ~= nil then
+      map.canvas2d:color("green")
+      map.canvas2d:line(game.x, game.y, ray.transparent.x, ray.transparent.y)
+    end
+  end
+end
+
+function colide(x, y)
+  local ix, iy = math.floor(x/map.block), math.floor(y/map.block)
+  local flag = map.grid[iy + 1][ix + 1] & 0xf000
+
+  if flag == 0x1000 then
+    return false
+  end
+
+  return true
 end
 
 function input(tick)
-	if (event.key("left").state == "pressed") then
-    player.radians = player.radians - player.rotationSpeed*tick
-	end
+  if (event.key("left").state == "pressed") then
+    game.radians = game.radians - game.rotationSpeed*tick
+  end
 
-	if (event.key("right").state == "pressed") then
-    player.radians = player.radians + player.rotationSpeed*tick
-	end
+  if (event.key("right").state == "pressed") then
+    game.radians = game.radians + game.rotationSpeed*tick
+  end
 
-  local x, y = 0, 0
+  -- walk to front, back
+  local x, y, stepx, stepy = 
+    0, 0, math.cos(game.radians)*game.walkSpeed*tick, math.sin(game.radians)*game.walkSpeed*tick
 
 	if (event.key("up").state == "pressed") then
-    x = player.x + math.cos(player.radians)*player.walkSpeed*tick
-    y = player.y + math.sin(player.radians)*player.walkSpeed*tick
+    if colide(game.x + stepx, game.y + stepy) == false then
+      game.x, game.y = game.x + stepx, game.y + stepy
+    elseif colide(game.x + stepx, game.y) == false then
+      game.x, game.y = game.x + stepx, game.y
+    elseif colide(game.x, game.y + stepy) == false then
+      game.x, game.y = game.x, game.y + stepy
+    end
 	end
 
 	if (event.key("down").state == "pressed") then
-    x = player.x - math.cos(player.radians)*player.walkSpeed*tick
-    y = player.y - math.sin(player.radians)*player.walkSpeed*tick
+    if colide(game.x - stepx, game.y - stepy) == false then
+      game.x, game.y = game.x - stepx, game.y - stepy
+    elseif colide(game.x - stepx, game.y) == false then
+      game.x, game.y = game.x - stepx, game.y
+    elseif colide(game.x, game.y - stepy) == false then
+      game.x, game.y = game.x, game.y - stepy
+    end
 	end
-
-  local ix, iy = math.floor(x/map.block), math.floor(y/map.block)
-
-  -- detect collision
-  if map.grid[iy + 1][ix + 1] == 0 then
-    player.x, player.y = x, y
-  end
 end
 
 function render(tick)
+	game:castRays()
+  game:render2d()
+
+  canvas.compose(map.canvas2d, 0, 0, dw, dh)
+
   input(tick)
-
-  map.canvas:clear()
-
-  map:render()
-  player:render()
-
-  configure()
 end
+
+print([[
+  jLightinning v0.0.1a
+]])

@@ -73,7 +73,7 @@ void ModifiersToString(jevent::jkeyevent_modifiers_t param)
   }
   
   if ((jevent::jkeyevent_modifiers_t)(param & jevent::JKM_CONTROL)) {
-    Event::keys["ctrol"] = {
+    Event::keys["ctrl"] = {
       "pressed", std::chrono::steady_clock::now()
     };
   }
