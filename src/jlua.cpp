@@ -22,6 +22,7 @@
 #include "canvas.h"
 #include "font.h"
 #include "event.h"
+#include "mixer.h"
 #include "utils.h"
 
 #include "jgui/japplication.h"
@@ -380,6 +381,7 @@ bool jLua::Load(std::string path)
 	Canvas::Register(l);
 	Font::Register(l);
 	Event::Register(l);
+	Mixer::Register(l);
 	
   Initialize();
 

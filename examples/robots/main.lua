@@ -51,86 +51,21 @@ bullet = sprites:crop(5*iw, 1*ih, iw, ih)
 cannon = sprites:crop(0*iw, 1*ih, iw, ih)
 explosion = GetImageList(sprites, 8, 4, 10, 3)
 
-sounds = {}
-
--- libav media player
---[[
-player = nil;
-
-function play_sound(id)
-	if (player ~= nil) then
-		if (player:status() == "stop" or player:status() == "finish") then
-			player:stop()
-
-			player = nil
-		else
-			return
-		end
-	end
-
-	player = media.create("sounds/" .. id .. ".mp3")
-
-	if (player ~= nil) then
-		player:play()
-	end
-end
-]]
+sounds = {
+  ["music"] = mixer.new("sounds/music-01.wav"),
+  ["cannon-fire"] = mixer.new("sounds/cannon-fire.wav"),
+  ["cannon-fire2"] = mixer.new("sounds/cannon-fire2.wav"),
+  ["cannon-moving"] = mixer.new("sounds/cannon-moving.wav"),
+  ["collision"] = mixer.new("sounds/collision.wav"),
+  ["explosion"] = mixer.new("sounds/explosion.wav"),
+  ["gun-fire"] = mixer.new("sounds/gun-fire.wav"),
+}
 
 function play_sound(id)
-  --[[
-	local max = 32
-
-	if (#sounds < max) then
-		player = media.create("sounds/" .. id .. ".wav")
-
-		if (player ~= nil) then
-			player:play()
-
-			sounds[#sounds+1] = {
-				["id"] = id,
-				["player"] = player
-			}
-		end
-	else
-		-- INFO:: verify if exists any player with same id in idle state
-		for i=1,#sounds do
-			local sound = sounds[i]
-
-			if (sound.id == id and (sound.player:status() == "stop" or sound.player:status() == "finish")) then
-				sound.player:play()
-
-				return
-			end
-		end
-
-		-- INFO:: if not, remove the first player of the list and create another one
-		for i=1,#sounds do
-			local sound = sounds[i].player
-
-			if (sound:status() == "stop" or sound:status() == "finish") then
-				sound:stop()
-		
-				player = media.create("sounds/" .. id .. ".wav")
-
-				if (player ~= nil) then
-					player:play()
-
-					sounds[i] = {
-						["id"] = id,
-						["player"] = player
-					}
-
-					break
-				end
-			end
-		end
-	end
-  ]]
+  sounds[id]:start()
 end
 
--- ambient_sound = media.create("sounds/background_sound.wav")
-
--- ambient_sound:play()
+sounds["music"]:start()
 
 ----------------------------------------------------------------------
 -- Arena

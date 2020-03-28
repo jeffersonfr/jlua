@@ -10,6 +10,7 @@ add_executable(jlua
     canvas.cpp
     font.cpp
 		event.cpp
+    mixer.cpp
 		utils.cpp
     jlua.cpp
     main.cpp
