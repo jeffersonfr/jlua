@@ -52,18 +52,18 @@ game.findHorizontalIntersections = function(self, angle, up, left, correction, r
 
     -- solid walls
     if (up == false and config.grid[iy] ~= nil) then
-      local id = config.grid[iy][ix] & 0x0fff
+      local id = getMapCurrentId(ix, iy, config.grid)
       
       if (id >= rangeStart and id < rangeEnd) then
-        return {x = x, y = y, distance = d, dir = 0, id = id}
+        return {x = x, y = y, distance = d, dir = 0, id = id, col = ix, row = iy}
       end
     end
 
     if (up == true and config.grid[iy - 1] ~= nil) then
-      local id = config.grid[iy - 1][ix] & 0x0fff
+      local id = getMapCurrentId(ix, iy - 1, config.grid)
       
       if (id >= rangeStart and id < rangeEnd) then
-        return {x = x, y = y, distance = d, dir = 0, id = id}
+        return {x = x, y = y, distance = d, dir = 0, id = id, col = ix, row = iy - 1}
       end
     end
   end
@@ -109,18 +109,19 @@ game.findVerticalIntersections = function(self, angle, up, left, correction, ran
 
     -- solid walls
     if (left == false and config.grid[iy] ~= nil) then
-      local id = config.grid[iy][ix] & 0x0fff
+      local id = getMapCurrentId(ix, iy, config.grid)
       
       if (id >= rangeStart and id < rangeEnd) then
-        return {x = x, y = y, distance = d, dir = 1, id = id}
+        return {x = x, y = y, distance = d, dir = 1, id = id, col = ix, row = iy}
       end
     end
     
     if (left == true and config.grid[iy] ~= nil) then
-      local id = config.grid[iy][ix - 1] & 0x0fff
+      -- TODO:: no caso de ser uma animacao, como ficaria o bitwise ????
+      local id = getMapCurrentId(ix - 1, iy, config.grid)
       
       if (id >= rangeStart and id < rangeEnd) then
-        return {x = x, y = y, distance = d, dir = 1, id = id}
+        return {x = x, y = y, distance = d, dir = 1, id = id, col = ix - 1, row = iy}
       end
     end
   end
@@ -203,12 +204,13 @@ game.render2d = function(self)
 
   for j=1,#config.grid do
     for i=1,#config.grid[j] do
-      local id = config.grid[j][i] & 0x0fff
-
       -- draw floor 
+      -- draw ceiling
 
-      if (id >= 0x0200) then
-        config.canvas2d:compose(config.textures[id], (i - 1)*config.block, (j - 1)*config.block, config.block, config.block)
+      local texture = getMapCurrentTexture(j, i, config.grid, config.textures)
+
+      if texture ~= nil then
+        config.canvas2d:compose(texture, (i - 1)*config.block, (j - 1)*config.block, config.block, config.block)
       end
     end
   end
@@ -234,8 +236,9 @@ game.render2d = function(self)
 
   for i=1,#config.sprites do
     local enemy = config.sprites[i]
+    local texture = getSpriteCurrentTexture(enemy, config.textures)
 
-    config.canvas2d:compose(config.textures[enemy.id], enemy.x, enemy.y, config.block, config.block)
+    config.canvas2d:compose(texture, enemy.x, enemy.y, config.block, config.block)
   end
 end
 
@@ -250,7 +253,8 @@ game.render3d = function(self)
       wallH = 8
     end
 
-    local tw, th = config.textures[ray.id]:size()
+    local texture = getMapCurrentTexture(ray.col, ray.row, config.grid, config.textures)
+    local tw, th = texture:size()
     local slice = (ray.x%config.block)*(tw/config.block)
     
     if ray.dir == 1 then
@@ -258,7 +262,7 @@ game.render3d = function(self)
     end
 
     if config.texture == true then
-      config.canvas3d:compose(config.textures[ray.id], slice, 0, 1, th, i*config.strip, h3/2 - wallH/2, config.strip, wallH)
+      config.canvas3d:compose(texture, slice, 0, 1, th, i*config.strip, h3/2 - wallH/2, config.strip, wallH)
     else
       config.canvas3d:color("white")
 
@@ -315,7 +319,7 @@ game.renderSprites = function(self)
 
   for i=1,#config.sprites do
     local enemy = config.sprites[i]
-    local texture = config.textures[enemy.id]
+    local texture = getSpriteCurrentTexture(enemy, config.textures)
     local iw, ih = texture:size()
     local angle = math.atan2(enemy.y - game.y, enemy.x - game.x)
     local interAngle = math.fmod(angle - game.radians, 2*math.pi)
@@ -373,7 +377,7 @@ game.renderSprites = function(self)
           local distance = raySprite.distance/math.cos(interAngle)
 
           if distance < rayWall.distance then
-            config.canvas3d:compose(config.textures[enemy.id], spriteSlice, 0, 1, ih, i, spriteY, config.strip, spriteH)
+            config.canvas3d:compose(texture, spriteSlice, 0, 1, ih, i, spriteY, config.strip, spriteH)
           end
         end
       end
@@ -395,7 +399,8 @@ game.renderTransparent = function(self)
           wallH = 8
         end
 
-        local tw, th = config.textures[ray.transparent.id]:size()
+        local texture = getMapCurrentTexture(ray.transparent.col, ray.transparent.row, config.grid, config.textures)
+        local tw, th = texture:size()
         local slice = (ray.transparent.x%config.block)*(tw/config.block)
 
         if ray.transparent.dir == 1 then
@@ -403,7 +408,7 @@ game.renderTransparent = function(self)
         end
 
         if config.texture == true then
-          config.canvas3d:compose(config.textures[ray.transparent.id], slice, 0, 1, th, i*config.strip, h3/2 - wallH/2, config.strip, wallH)
+          config.canvas3d:compose(texture, slice, 0, 1, th, i*config.strip, h3/2 - wallH/2, config.strip, wallH)
         else
           config.canvas3d:color(0xff, 0xff, 0xff, 0xa0)
 

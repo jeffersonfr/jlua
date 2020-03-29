@@ -1,8 +1,8 @@
+dofile("utils.lua")
 dofile("config.lua")
 dofile("config.lua")
 dofile("game.lua")
 dofile("animation.lua")
-dofile("utils.lua")
 
 local inputDelayCounter = 0
 
@@ -38,7 +38,14 @@ function input(tick)
       local distance = 1.5
       local ix = math.floor((game.x + math.cos(game.radians)*config.block*distance)/config.block) + 1
       local iy = math.floor((game.y + math.sin(game.radians)*config.block*distance)/config.block) + 1
-      local flag = config.grid[iy][ix] & 0x2000
+      local texture = config.grid[iy][ix]
+      local flag
+      
+      if type(texture) == "table" then
+        flag = texture.textureFlag
+      else
+        flag = texture & 0xf000
+      end
 
       if flag ~= 0x2000 then
         return
@@ -141,21 +148,17 @@ function render(tick)
     canvas.compose(config.canvas2d, 0, 0, w2/2, h2/2)
   end
 
-  -- process config.animations from config.animations
-  local invalidList = {}
+  -- process config.grid.animations 
+  for j=1,#config.grid do
+    for i=1,#config.grid[1] do
+      local animation = config.grid[j][i]
 
-  for i=1,#config.animations do
-    config.animations[i]:update(tick)
-
-    if config.animations[i].isValid == false then
-      invalidList[#invalidList + 1] = i
+      if type(animation) == "table" then
+        animation:update(tick)
+      end
     end
   end
 
-  for i=1,#invalidList do
-    table.remove(config.animations, invalidList[i])
-  end
-  
   -- process config.animations from config.sprites
   local invalidList = {}
 
@@ -188,7 +191,7 @@ function render(tick)
   input(tick)
 end
 
-createGhostAnimation(150, 100)
+-- createGhostAnimation(150, 100)
 
 --[[ FIX::
 -- - shadder not trepassing transparent walls

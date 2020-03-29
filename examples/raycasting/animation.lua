@@ -3,34 +3,6 @@ Animation = {
 
 Animation.__index = Animation
 
---[[
--- [col, row]: animate map blocks
--- [col, -1]: animate game sprites
---]]
-function Animation:createMapAnimation(map, col, row, index, loop, startDelay, delay, frames)
-   local obj = {}
-   
-   setmetatable(obj, Animation)
- 
-   obj.animationType = "map"
-   obj.startDelay = startDelay
-   obj.map = map
-   obj.col = col
-   obj.row = row
-   obj.frames = frames
-   obj.index = index
-   obj.loop = loop
-   obj.delay = delay
-   obj.running = false
-   obj.counter = 0
-   obj.isValid = true
-   obj.begin = nil -- callback before the first animation
-   obj.callback = nil -- callback for every animation
-   obj.finish = nil -- callback after the last animation
-   
-   return obj
-end
-
 function Animation:createSpriteAnimation(sprite, velX, velY, index, loop, startDelay, delay, frames)
    local obj = {}
    
@@ -51,6 +23,31 @@ function Animation:createSpriteAnimation(sprite, velX, velY, index, loop, startD
    obj.begin = nil -- callback before the first animation
    obj.callback = nil -- callback for every animation
    obj.finish = nil -- callback after the last animation
+   obj.autoInvalidate = false
+   
+   return obj
+end
+
+function Animation:createMapAnimation(texture, flag, index, loop, startDelay, delay, frames)
+   local obj = {}
+   
+   setmetatable(obj, Animation)
+ 
+   obj.animationType = "sprite"
+   obj.startDelay = startDelay
+   obj.textureId = texture
+   obj.textureFlag = flag
+   obj.frames = frames
+   obj.index = index
+   obj.loop = loop
+   obj.delay = delay
+   obj.running = false
+   obj.counter = 0
+   obj.isValid = true
+   obj.begin = nil -- callback before the first animation
+   obj.callback = nil -- callback for every animation
+   obj.finish = nil -- callback after the last animation
+   obj.autoInvalidate = false
    
    return obj
 end
@@ -63,6 +60,7 @@ function Animation:createTimeoutAnimation(loop, startDelay, delay)
    obj.animationType = "timeout"
    obj.startDelay = startDelay
    obj.loop = loop
+   obj.index = -1
    obj.delay = delay
    obj.running = false
    obj.counter = 0
@@ -70,8 +68,13 @@ function Animation:createTimeoutAnimation(loop, startDelay, delay)
    obj.begin = nil -- callback before the first animation
    obj.callback = nil -- callback for every animation
    obj.finish = nil -- callback after the last animation
+   obj.autoInvalidate = false
    
    return obj
+end
+
+function Animation:textureIndex()
+  return self.index + 1
 end
 
 function Animation:start()
@@ -109,54 +112,47 @@ function Animation:update(tick)
   end
 
   if self.counter >= self.delay then
-    if self.callback ~= nil then
-      self:callback()
+    if self.animationType == "sprite" then
+      if self.sprite ~= nil then
+        local x = self.sprite.x + self.velX
+        local y = self.sprite.y + self.velY
+
+        if x < 0 or y < 0 or x > w2 or y > h2 then
+          if self.finish ~= nil then
+            self:finish()
+          end
+
+          self:invalidate()
+        end
+
+        self.sprite.x = x
+        self.sprite.y = y
+      end
+
+      local index = math.fmod(self.index + 1, #self.frames)
+
+      -- self.index = index
+      if index == 0 then
+        if self.loop == false then
+          self.running = false
+
+          if self.autoInvalidate == true then
+            self:invalidate()
+          end
+        else
+          self.index = index
+        end
+
+        if self.finish ~= nil then
+          self:finish()
+        end
+      else
+        self.index = index
+      end
     end
 
-    if self.animationType == "sprite" then
-      self.sprite.id = self.frames[self.index + 1]
-      
-      local x = self.sprite.x + self.velX
-      local y = self.sprite.y + self.velY
-
-      if x < 0 or y < 0 or x > w2 or y > h2 then
-        if self.finish ~= nil then
-          self:finish()
-        end
-
-        self:invalidate()
-      end
-      
-      self.sprite.x = x
-      self.sprite.y = y
-
-      self.index = math.fmod(self.index + 1, #self.frames)
-
-      if self.index == 0 then
-        if self.loop == false then
-          self.running = false
-        end
-
-        if self.finish ~= nil then
-          self:finish()
-        end
-      end
-    elseif self.animationType == "map" then
-      local flag = config.grid[self.row][self.col] & 0xf000
-    
-      config.grid[self.row][self.col] = self.frames[self.index + 1] | flag -- update config.grid
-      
-      self.index = math.fmod(self.index + 1, #self.frames)
-
-      if self.index == 0 then
-        if self.loop == false then
-          self.running = false
-        end
-
-        if self.finish ~= nil then
-          self:finish()
-        end
-      end
+    if self.callback ~= nil then
+      self:callback()
     end
 
     self.counter = self.counter - self.delay
@@ -166,4 +162,3 @@ end
 function Animation:invalidate()
   self.isValid = false
 end
-
