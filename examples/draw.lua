@@ -103,8 +103,6 @@ for i=0,ncolors do
 	layer0:line(1750, 100+i, 1850, 100+i)
 end
 
-function configure()
+function render(tick)
 	canvas.compose(layer0, 0, 0)
 end
-
-configure()

@@ -11,7 +11,9 @@ layer1:rect("fill", 0, 0, layer0:size())
 layer2:color(0, 100, 0, 0x80)
 layer2:rect("fill", 0, 0, layer0:size())
 
-canvas.compose(layer0, 0, 0)
-canvas.compose(layer1, 200, 200)
-canvas.compose(layer2, 50, 300)
+function render(tick)
+  canvas.compose(layer0, 0, 0)
+  canvas.compose(layer1, 200, 200)
+  canvas.compose(layer2, 50, 300)
+end
 

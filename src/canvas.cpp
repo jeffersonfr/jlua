@@ -698,6 +698,12 @@ static int lua_Canvas_compose(lua_State *l)
 		offset = 1;
 	}
 
+  if (g == nullptr) {
+    L(WARN, "canvas:compose(): null point exception");
+
+    return 0;
+  }
+
   g->SetBlittingFlags(jgui::JBF_NEAREST);
 
   if (lua_gettop(l) == 4 - offset) { // INFO:: canvas:compose(src, dx, dy)

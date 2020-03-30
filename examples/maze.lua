@@ -119,8 +119,6 @@ end
 
 moveFrom(2,2)
 
-function configure()
+function render(tick)
 	canvas.compose(layer0, 0, 0, display.size())
 end
-
-configure()
