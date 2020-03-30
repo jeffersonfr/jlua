@@ -40,6 +40,7 @@ config.minimap = false
 config.shadder = true
 config.texture = true
 config.fov = 45*math.pi/180
+config.weapon = 1
 
 config.textures = {
   [0x0200] = {
@@ -71,10 +72,19 @@ config.textures = {
   [0x0320] = splitTexture("images/ghost.png", 4, 1),
 
   [0x0330] = splitTexture("images/fireball.png", 6, 4),
+  
+  [0x0340] = {
+    canvas.new("images/bullet.png"),
+  },
 
   [0x0350] = splitTexture("images/explosion.png", 4, 4),
 
-  [0x0400] = canvas.new("images/parallax.png")
+  [0x0360] = splitTexture("images/weapon-01.png", 5, 1),
+  [0x0361] = splitTexture("images/weapon-02.png", 5, 1),
+  [0x0362] = splitTexture("images/weapon-03.png", 5, 1),
+  [0x0363] = splitTexture("images/weapon-04.png", 5, 1),
+
+  [0x0400] = canvas.new("images/parallax.png"),
 }
 
 config.sprites = {

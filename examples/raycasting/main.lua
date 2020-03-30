@@ -4,10 +4,34 @@ dofile("config.lua")
 dofile("game.lua")
 dofile("animation.lua")
 
+shootAnimation = createShootAnimation()
+
+shootAnimation.begin = function(self)
+  createProjectileAnimation(game.x, game.y, 2*math.cos(game.radians)*config.block, 2*math.sin(game.radians)*config.block, 0x0340)
+end
+
 local inputDelayCounter = 0
 
 function input(tick)
   local strife = 0
+
+  if event.key("1").state == "pressed" then
+    config.weapon = 0
+    shootAnimation.startDelay = 0.5
+    shootAnimation.resetStartDelay = shootAnimation.startDelay
+  elseif event.key("2").state == "pressed" then
+    config.weapon = 1
+    shootAnimation.startDelay = 1.0
+    shootAnimation.resetStartDelay = shootAnimation.startDelay
+  elseif event.key("3").state == "pressed" then
+    config.weapon = 2
+    shootAnimation.startDelay = 0.2
+    shootAnimation.resetStartDelay = shootAnimation.startDelay
+  elseif event.key("4").state == "pressed" then
+    config.weapon = 3
+    shootAnimation.startDelay = 0.0
+    shootAnimation.resetStartDelay = shootAnimation.startDelay
+  end
 
   if inputDelayCounter == 0 then
     if (event.key("m").state == "pressed") then
@@ -55,7 +79,7 @@ function input(tick)
     end
     
     if (event.key("ctrl").state == "pressed") then
-      createFireballAnimation(game.x, game.y, math.cos(game.radians)*config.block, math.sin(game.radians)*config.block)
+      shootAnimation:start()
     end
   end
 
@@ -141,6 +165,7 @@ function render(tick)
   game:render2d()
   game:parallax()
   game:render3d()
+  game:renderPlayer()
 
   canvas.compose(config.canvas3d, 0, 0)
 
@@ -188,10 +213,13 @@ function render(tick)
     table.remove(config.sprites, invalidList[i])
   end
   
+  shootAnimation:update(tick)
+
   input(tick)
 end
 
--- createGhostAnimation(150, 100)
+createGhostAnimation(150, 100)
+createGhostAnimation(100, 100)
 
 --[[ FIX::
 -- - shadder not trepassing transparent walls

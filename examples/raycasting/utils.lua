@@ -118,6 +118,17 @@ function createOpenCloseDoorAnimation(ix, iy) -- animation to open and close doo
   config.grid[iy][ix] = openDoor
 end
 
+-- Creates a shoot animation
+function createShootAnimation()
+  local animation = Animation:createSpriteAnimation(nil, 0, 0, 0, false, 1.0, 0.1, {1, 2, 3, 4})
+
+  animation.finish = function(self)
+    self:reset()
+  end
+
+  return animation
+end
+
 -- Creates a animated sprite of a ghost
 function createGhostAnimation(x, y) -- ghost animation
   local entity = {x = x, y = y, percentH = 0.75, position = -1, id = 0x0320}
@@ -128,7 +139,7 @@ function createGhostAnimation(x, y) -- ghost animation
   fireballAnimation.callback = function()
     local angle = math.atan2(game.y - y, game.x - x)
 
-    createFireballAnimation(x, y, math.cos(angle)*config.block, math.sin(angle)*config.block)
+    createProjectileAnimation(x, y, math.cos(angle)*config.block, math.sin(angle)*config.block, 0x0330)
   end
 
   entity.animations = {
@@ -161,8 +172,8 @@ function createExplosion(x, y)
 end
 
 -- Creates a moveable animated sprite of a fireball
-function createFireballAnimation(x, y, vx, vy) -- fireball animation ()
-  local entity = {x = x, y = y, percentH = 0.75, position = -1, id = 0x0330}
+function createProjectileAnimation(x, y, vx, vy, id)
+  local entity = {x = x, y = y, percentH = 0.75, position = -1, id = id}
 
   entity.animations = {
     Animation:createSpriteAnimation(entity, vx/2, vy/2, 0, true, 0.0, 0.1, config.textures[entity.id])

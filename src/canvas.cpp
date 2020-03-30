@@ -596,6 +596,8 @@ static int lua_Canvas_scale(lua_State *l)
     Canvas
       **udata = (Canvas **)lua_newuserdata(l, sizeof(Canvas *));
 
+    canvas->image->GetGraphics()->SetAntialias(jgui::JAM_NONE);
+
     *udata = new Canvas(canvas->image->Scale({w, h}));
 
     luaL_getmetatable(l, METATABLE.c_str());
@@ -695,6 +697,8 @@ static int lua_Canvas_compose(lua_State *l)
 
 		offset = 1;
 	}
+
+  g->SetBlittingFlags(jgui::JBF_NEAREST);
 
   if (lua_gettop(l) == 4 - offset) { // INFO:: canvas:compose(src, dx, dy)
     Canvas 

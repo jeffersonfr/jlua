@@ -244,6 +244,8 @@ end
 
 game.render3d = function(self)
   local distProjPlane = (w3/2)/math.tan(config.fov/2)
+  local radians = math.fmod(game.radians, 2*math.pi) - config.fov/2.0
+  local playerH = 16
 
   for i=1,#game.rays do
 		local ray = game.rays[i]
@@ -273,21 +275,20 @@ game.render3d = function(self)
       config.canvas3d:rect("fill", i*config.strip, h3/2 - wallH/2, config.strip, wallH)
     end
 
-    --[[
-    -- casting floor
-    local radians = math.fmod(game.radians, 2*math.pi) - config.fov/2.0
-    local playerH = 32
-    local rayangle = radians + i*config.fov/w3
+    --[[ casting floor
+    local rayangle = radians + i*config.fov/#game.rays
 
-    for row=h3/2 + wallH,h3,config.strip do
+    for row=h3/2 + wallH/2,h3 do
       local distance = (playerH/(row - h3/2))*distProjPlane
       local x = math.floor(distance*math.cos(rayangle) + game.x)
       local y = math.floor(distance*math.sin(rayangle) + game.y)
 
       -- local tile = config.textures[config.grid[x >> 6 + 1][y >> 6 + 1] ]
-      local tile = config.textures[0x0200]
+      local tile = config.textures[0x0200][1]
 
-      config.canvas3d:pixels(i, row, tile:pixels(x & 31, y & 31))
+      for k=0,config.strip do
+        config.canvas3d:pixels(i*config.strip + k, row, tile:pixels(x & 31, y & 31))
+      end
     end
     ]]
   end
@@ -421,6 +422,15 @@ game.renderTransparent = function(self)
       end
     end
   end
+end
+
+game.renderPlayer = function(self)
+  local texture = config.textures[0x0360 + config.weapon][shootAnimation:textureIndex() + 1]
+  local w, h = w3/2, w3/2
+
+  texture = texture:scale(w, h)
+
+  config.canvas3d:compose(texture, (w3 - w)/2, h3 - h)
 end
 
 game.shadder = function(self)

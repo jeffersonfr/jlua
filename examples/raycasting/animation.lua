@@ -10,6 +10,7 @@ function Animation:createSpriteAnimation(sprite, velX, velY, index, loop, startD
  
    obj.animationType = "sprite"
    obj.startDelay = startDelay
+   obj.resetStartDelay = startDelay
    obj.sprite = sprite
    obj.velX = velX
    obj.velY = velY
@@ -35,6 +36,7 @@ function Animation:createMapAnimation(texture, flag, index, loop, startDelay, de
  
    obj.animationType = "sprite"
    obj.startDelay = startDelay
+   obj.resetStartDelay = startDelay
    obj.textureId = texture
    obj.textureFlag = flag
    obj.frames = frames
@@ -59,6 +61,7 @@ function Animation:createTimeoutAnimation(loop, startDelay, delay)
  
    obj.animationType = "timeout"
    obj.startDelay = startDelay
+   obj.resetStartDelay = startDelay
    obj.loop = loop
    obj.index = -1
    obj.delay = delay
@@ -75,6 +78,11 @@ end
 
 function Animation:textureIndex()
   return self.index + 1
+end
+
+function Animation:reset()
+  self.index = 0
+  self.startDelay = self.resetStartDelay
 end
 
 function Animation:start()
@@ -145,6 +153,8 @@ function Animation:update(tick)
 
         if self.finish ~= nil then
           self:finish()
+
+          self.startDelay = self.resetStartDelay
         end
       else
         self.index = index
