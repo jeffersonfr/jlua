@@ -6,31 +6,27 @@ dofile("animation.lua")
 
 shootAnimation = createShootAnimation()
 
-shootAnimation.begin = function(self)
-  createProjectileAnimation(game.x, game.y, 2*math.cos(game.radians)*config.block, 2*math.sin(game.radians)*config.block, 0x0340)
-end
-
 local inputDelayCounter = 0
+
+local shootDelayCounter = 0
+local weaponDelay = 1.0
+local shooted = false
 
 function input(tick)
   local strife = 0
 
   if event.key("1").state == "pressed" then
     config.weapon = 0
-    shootAnimation.startDelay = 0.5
-    shootAnimation.resetStartDelay = shootAnimation.startDelay
+    weaponDelay = 0.5 -- knife
   elseif event.key("2").state == "pressed" then
     config.weapon = 1
-    shootAnimation.startDelay = 1.0
-    shootAnimation.resetStartDelay = shootAnimation.startDelay
+    weaponDelay = 1.0 -- gun
   elseif event.key("3").state == "pressed" then
     config.weapon = 2
-    shootAnimation.startDelay = 0.2
-    shootAnimation.resetStartDelay = shootAnimation.startDelay
+    weaponDelay = 0.25 -- rifle
   elseif event.key("4").state == "pressed" then
     config.weapon = 3
-    shootAnimation.startDelay = 0.0
-    shootAnimation.resetStartDelay = shootAnimation.startDelay
+    weaponDelay = 0.1 -- machine gun
   end
 
   if inputDelayCounter == 0 then
@@ -58,28 +54,46 @@ function input(tick)
       end
     end
 
-    if (event.key("space").state == "pressed") then
-      local distance = 1.5
-      local ix = math.floor((game.x + math.cos(game.radians)*config.block*distance)/config.block) + 1
-      local iy = math.floor((game.y + math.sin(game.radians)*config.block*distance)/config.block) + 1
-      local texture = config.grid[iy][ix]
-      local flag
-      
-      if type(texture) == "table" then
-        flag = texture.textureFlag
+    if (event.key("f").state == "pressed") then
+      if config.floor == false then
+        config.floor = true
       else
-        flag = texture & 0xf000
+        config.floor = false
       end
-
-      if flag ~= 0x2000 then
-        return
-      end
-
-      createOpenCloseDoorAnimation(ix, iy)
     end
-    
-    if (event.key("ctrl").state == "pressed") then
-      shootAnimation:start()
+
+    if (event.key("p").state == "pressed") then
+      if config.parallax == false then
+        config.parallax = true
+      else
+        config.parallax = false
+      end
+    end
+  end
+
+  if (event.key("space").state == "pressed") then
+    local distance = 1.5
+    local ix = math.floor((game.x + math.cos(game.radians)*config.block*distance)/config.block) + 1
+    local iy = math.floor((game.y + math.sin(game.radians)*config.block*distance)/config.block) + 1
+    local texture = config.grid[iy][ix]
+    local flag
+
+    if type(texture) == "table" then
+      flag = texture.textureFlag
+    else
+      flag = texture & 0xf000
+    end
+
+    if flag ~= 0x2000 then
+      return
+    end
+
+    createOpenCloseDoorAnimation(ix, iy)
+  end
+
+  if (event.key("ctrl").state == "pressed") then
+    if shootAnimation.running == false then
+      shooted = true
     end
   end
 
@@ -148,6 +162,18 @@ function input(tick)
 
   if inputDelayCounter > 0.1 then -- 100ms
     inputDelayCounter = 0
+  end
+  
+  shootDelayCounter = shootDelayCounter + tick
+
+  if shootDelayCounter > weaponDelay then
+    if shooted == true then
+      shooted = false
+      shootDelayCounter = 0
+
+      shootAnimation:start()
+      createProjectileAnimation(game.x, game.y, 2*math.cos(game.radians)*config.block, 2*math.sin(game.radians)*config.block, 0x0340)
+    end
   end
 end
 
@@ -230,6 +256,7 @@ print([[
   jRayCaster v0.0.1a
 
   l,h -> low/high resolution
+  f -> on/off floor
   m -> on/off minimap
   s -> on/off shadder
   t -> on/off texture

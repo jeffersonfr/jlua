@@ -39,6 +39,8 @@ config.strip = 1
 config.minimap = false
 config.shadder = true
 config.texture = true
+config.floor = true
+config.parallax = true
 config.fov = 45*math.pi/180
 config.weapon = 1
 

@@ -699,7 +699,7 @@ static int lua_Canvas_compose(lua_State *l)
 	}
 
   if (g == nullptr) {
-    L(WARN, "canvas:compose(): null point exception");
+    L(WARN, "canvas:compose(): this method must be called inside of render(tick) method");
 
     return 0;
   }
@@ -778,6 +778,7 @@ Canvas::Canvas(jgui::Image *image):
 Canvas::~Canvas()
 {
 	delete image;
+  image = nullptr;
 }
 
 Canvas * Canvas::Check(lua_State *l, int n)

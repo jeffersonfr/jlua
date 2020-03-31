@@ -1,6 +1,8 @@
-layer0 = canvas.new(1280, 720)
+local w, h = 1280, 720
 
-local w, h = layer0:size()
+display.size(w, h)
+
+layer0 = canvas.new(w, h)
 
 arena = {
 	size = {
@@ -38,7 +40,7 @@ robot = {
 angles_table = {}
 
 for i=1,robot.angle.count do
-	local a = (i-1)*2*math.pi/robot.angle.count
+	local a = (i - 1)*2*math.pi/robot.angle.count
 
 	angles_table[i] = {
 		["radians"] = a,
@@ -140,7 +142,7 @@ function robot.draw()
 	local points = {}
 
 	for i=1,3 do
-		local idx = math.fmod((i-1)*teta+robot.angle.index, robot.angle.count) + 1
+		local idx = math.floor(math.fmod((i-1)*teta+robot.angle.index, robot.angle.count) + 1)
 
 		points[i] = {["x"] = w*angles_table[idx].cos, ["y"] = h*angles_table[idx].sin}
 	end
@@ -266,6 +268,8 @@ local last = {
 -- limites inferior e superior
 local inf = 8
 local sup = 64
+local cntN = 0
+local cntP = 0
 
 function render(tick)
 		-- top-left, top-right, bottom-left, bottom-right
@@ -278,13 +282,29 @@ function render(tick)
 		-- angle.count = 24
 		-- step.size = 6
 		if (tl > tr) then
-			robot.rotate("+")
+      cntN = 0
+
+      if cntP > 0 then
+        cntP = 0
+			  robot.rotate("+")
+      end
+
+      cntP = cntP + 1
 		else
-			robot.rotate("-")
+      cntP = 0
+
+      if cntN > 0 then
+        cntN = 0
+  			robot.rotate("-")
+      end
+
+      cntN = cntN + 1
 		end
 
 		robot.walk()
 
 		canvas.compose(layer0, 0, 0)
+
+    collectgarbage("collect")
 end
 

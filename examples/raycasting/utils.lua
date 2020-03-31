@@ -120,7 +120,7 @@ end
 
 -- Creates a shoot animation
 function createShootAnimation()
-  local animation = Animation:createSpriteAnimation(nil, 0, 0, 0, false, 1.0, 0.1, {1, 2, 3, 4})
+  local animation = Animation:createSpriteAnimation(nil, 0, 0, 0, false, 0.0, 0.1, {1, 2, 3, 4})
 
   animation.finish = function(self)
     self:reset()

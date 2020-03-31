@@ -180,6 +180,10 @@ game.castRays = function(self)
 end
 
 game.parallax = function(self)
+  if config.parallax == false then
+    return
+  end
+
   local sw, sh = config.textures[0x0400]:size()
   local sliceStrip = sw/360
   local fov0 = config.fov*180/math.pi
@@ -275,22 +279,23 @@ game.render3d = function(self)
       config.canvas3d:rect("fill", i*config.strip, h3/2 - wallH/2, config.strip, wallH)
     end
 
-    --[[ casting floor
-    local rayangle = radians + i*config.fov/#game.rays
+    if config.floor == true then -- casting floor
+      local rayangle = radians + i*config.fov/#game.rays
+      local fovAngle = rayangle - radians - config.fov/2
 
-    for row=h3/2 + wallH/2,h3 do
-      local distance = (playerH/(row - h3/2))*distProjPlane
-      local x = math.floor(distance*math.cos(rayangle) + game.x)
-      local y = math.floor(distance*math.sin(rayangle) + game.y)
+      for row=h3/2 + wallH/2,h3 do
+        local distance = (playerH/(row - h3/2))*distProjPlane/math.cos(fovAngle)
+        local x = math.floor(distance*math.cos(rayangle) + game.x)
+        local y = math.floor(distance*math.sin(rayangle) + game.y)
 
-      -- local tile = config.textures[config.grid[x >> 6 + 1][y >> 6 + 1] ]
-      local tile = config.textures[0x0200][1]
+        -- local tile = config.textures[config.grid[x >> 6 + 1][y >> 6 + 1] ]
+        local tile = config.textures[0x0200][1]
 
-      for k=0,config.strip do
-        config.canvas3d:pixels(i*config.strip + k, row, tile:pixels(x & 31, y & 31))
+        for k=0,config.strip do
+          config.canvas3d:pixels(i*config.strip + k, row, tile:pixels(x & 31, y & 31))
+        end
       end
     end
-    ]]
   end
   
   -- there is a problem of z-index when render a transparent wall over a sprite, or vice-versa
