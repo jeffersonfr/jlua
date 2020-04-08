@@ -47,7 +47,7 @@ int lua_Canvas_new(lua_State *l)
     Canvas
       **udata = (Canvas **)lua_newuserdata(l, sizeof(Canvas *));
 
-    *udata = new Canvas(new jgui::BufferedImage(jgui::JPF_ARGB, {w, h}));
+    *udata = new Canvas(new jgui::BufferedImage(jgui::JPF_RGB32, {w, h}));
 		
 		(*udata)->image->GetGraphics()->SetFont(&jgui::Font::NORMAL);
   }
@@ -387,13 +387,14 @@ static int lua_Canvas_pixels(lua_State *l)
       y = (int)luaL_checknumber(l, 3);
     uint32_t
       color = g->GetRGB({x, y});
+    
+    lua_pushinteger(l, color);
+    // lua_pushinteger(l, (color >> 16) & 0xff);
+    // lua_pushinteger(l, (color >> 8) & 0xff);
+    // lua_pushinteger(l, (color >> 0) & 0xff);
+    // lua_pushinteger(l, (color >> 24) & 0xff);
 
-    lua_pushinteger(l, (color >> 16) & 0xff);
-    lua_pushinteger(l, (color >> 8) & 0xff);
-    lua_pushinteger(l, (color >> 0) & 0xff);
-    lua_pushinteger(l, (color >> 24) & 0xff);
-
-		return 4;
+		return 1;
   } else if (lua_gettop(l) == 4) { // INFO:: canvas:pixels(x, y, argb)
     int 
       x = (int)luaL_checknumber(l, 2),
@@ -401,7 +402,7 @@ static int lua_Canvas_pixels(lua_State *l)
     uint32_t
       color = (uint32_t)luaL_checknumber(l, 4);
 
-    g->SetRGB(color, {x, y});
+    g->SetRawRGB(color, {x, y});
 
 		return 0;
   } else if (lua_gettop(l) == 5) { // INFO:: canvas:pixels(x, y, w, h)

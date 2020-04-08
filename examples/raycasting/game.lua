@@ -132,7 +132,7 @@ end
 game.castRays = function(self)
   local radians = math.fmod(game.radians, 2*math.pi) - config.fov/2.0
 
-	game.rays = {}
+	rays = {}
 
   for i=0,w3,config.strip do
     local angle = radians + i*config.fov/w3
@@ -154,7 +154,7 @@ game.castRays = function(self)
       left = true
     end
 
-    local correction = math.cos(-config.fov/2 + i*config.fov/w3) -- correct fish-eye effect
+    local correction = cos(-config.fov/2 + i*config.fov/w3) -- correct fish-eye effect
 
     -- find intersection for solid block
     local h = self:findHorizontalIntersections(angle, up, left, correction, 0x0200, 0x0300)
@@ -175,8 +175,10 @@ game.castRays = function(self)
       intersection.transparent = v
     end
 
-		game.rays[#game.rays + 1] = intersection
+		rays[#rays + 1] = intersection
   end
+
+  game.rays = rays
 end
 
 game.parallax = function(self)
@@ -184,13 +186,13 @@ game.parallax = function(self)
     return
   end
 
-  local sw, sh = config.textures[0x0400]:size()
+  local texture = config.textures[0x0400]
+  local sw, sh = texture:size()
   local sliceStrip = sw/360
   local fov0 = config.fov*180/math.pi
   local angle = math.fmod(self.radians*180/math.pi, 360)
   local startAngle = angle - fov0/2
   local angleStrip = fov0/w3
-  local texture = config.textures[0x0400]
 
   for i=0,w3,config.strip do
     local angle = math.fmod(startAngle + i*angleStrip, 360)
@@ -204,7 +206,9 @@ game.parallax = function(self)
 end
 
 game.render2d = function(self)
-  config.canvas2d:clear()
+  local canvas2d = config.canvas2d
+
+  canvas2d:clear()
 
   for j=1,#config.grid do
     for i=1,#config.grid[j] do
@@ -214,46 +218,53 @@ game.render2d = function(self)
       local texture = getMapCurrentTexture(j, i, config.grid, config.textures)
 
       if texture ~= nil then
-        config.canvas2d:compose(texture, (i - 1)*config.block, (j - 1)*config.block, config.block, config.block)
+        canvas2d:compose(texture, (i - 1)*config.block, (j - 1)*config.block, config.block, config.block)
       end
     end
   end
-    
-  for i=1,#game.rays,config.strip do
-    local ray = game.rays[i]
+  
+  local rays = game.rays
+
+  for i=1,#rays,config.strip do
+    local ray = rays[i]
 
     if (ray.dir == 0) then
-      config.canvas2d:color("blue")
+      canvas2d:color("blue")
     else
-      config.canvas2d:color("red")
+      canvas2d:color("red")
     end
       
-    config.canvas2d:line(game.x, game.y, ray.x, ray.y)
+    canvas2d:line(game.x, game.y, ray.x, ray.y)
     
     if ray.transparent ~= nil then
-      config.canvas2d:color("green")
-      config.canvas2d:line(game.x, game.y, ray.transparent.x, ray.transparent.y)
+      canvas2d:color("green")
+      canvas2d:line(game.x, game.y, ray.transparent.x, ray.transparent.y)
     end
   end
 
-  config.canvas2d:color("white")
+  canvas2d:color("white")
 
   for i=1,#config.sprites do
     local enemy = config.sprites[i]
     local texture = getSpriteCurrentTexture(enemy, config.textures)
 
-    config.canvas2d:compose(texture, enemy.x, enemy.y, config.block, config.block)
+    canvas2d:compose(texture, enemy.x, enemy.y, config.block, config.block)
   end
 end
 
 game.render3d = function(self)
   local distProjPlane = (w3/2)/math.tan(config.fov/2)
   local radians = math.fmod(game.radians, 2*math.pi) - config.fov/2.0
-  local playerH = 16
+  local randomLight = math.random(40, 60)/10
+  local sparseLight = 0xff
 
-  for i=1,#game.rays do
-		local ray = game.rays[i]
-    local wallH = (config.block/ray.distance)*distProjPlane
+  local canvas3d = config.canvas3d
+  local rays = game.rays
+
+  for i=1,#rays do
+		local ray = rays[i]
+    local distance = ray.distance
+    local wallH = (config.block/distance)*distProjPlane
 
     if wallH < 8 then
       wallH = 8
@@ -268,41 +279,103 @@ game.render3d = function(self)
     end
 
     if config.texture == true then
-      config.canvas3d:compose(texture, slice, 0, 1, th, i*config.strip, h3/2 - wallH/2, config.strip, wallH)
+      canvas3d:compose(texture, slice, 0, 1, th, i*config.strip, h3/2 - wallH/2, config.strip, wallH)
     else
-      config.canvas3d:color("white")
+      canvas3d:color("white")
 
       if ray.dir == 1 then
-        config.canvas3d:color("grey")
+        canvas3d:color("grey")
       end
 
-      config.canvas3d:rect("fill", i*config.strip, h3/2 - wallH/2, config.strip, wallH)
+      canvas3d:rect("fill", i*config.strip, h3/2 - wallH/2, config.strip, wallH)
     end
 
-    if config.floor == true then -- casting floor
-      local rayangle = radians + i*config.fov/#game.rays
+    if config.shadder == "dark" then
+      -- add some dark shadder
+      local shadder = randomLight*distance/math.max(w3, h3)
+
+      if shadder > 1.0 then
+        shadder = 1.0
+      end
+
+      local light = shadder * sparseLight
+
+      canvas3d:color(0, 0, 0, light)
+      canvas3d:rect("fill", i*config.strip, h3/2 - wallH/2, config.strip, wallH)
+    end
+
+    if config.floor == true and config.shadder == "none" then -- casting floor
+      local rayangle = radians + i*config.fov/#rays
       local fovAngle = rayangle - radians - config.fov/2
+      local distProjPlaneDistortion = config.playerHeight*distProjPlane/cos(fovAngle)
 
-      for row=h3/2 + wallH/2,h3 do
-        local distance = (playerH/(row - h3/2))*distProjPlane/math.cos(fovAngle)
-        local x = math.floor(distance*math.cos(rayangle) + game.x)
-        local y = math.floor(distance*math.sin(rayangle) + game.y)
+      local cosAngle, sinAngle = cos(rayangle), sin(rayangle)
+      local tile = config.textures[0x0100][1]
+      local tw, th = tile:size()
 
-        -- local tile = config.textures[config.grid[x >> 6 + 1][y >> 6 + 1] ]
-        local tile = config.textures[0x0200][1]
+      tw, th = tw - 1, th - 1
 
-        for k=0,config.strip do
-          config.canvas3d:pixels(i*config.strip + k, row, tile:pixels(x & 31, y & 31))
+      for row = h3/2 + wallH/2, h3 do
+        local distance = distProjPlaneDistortion/(row - h3/2)
+        local x = math.floor(distance*cosAngle + game.x)
+        local y = math.floor(distance*sinAngle + game.y)
+
+        -- local tile = config.textures[config.grid[x >> 6 + 1][y >> 6 + 1] & 0x0fff][1]
+        -- local tw, th = tile:size()
+
+        local pixel = tile:pixels(x & tw, y & th)
+
+        for k=1,config.strip do
+          canvas3d:pixels(i*config.strip + k, row, pixel)
         end
       end
     end
-  end
-  
-  -- there is a problem of z-index when render a transparent wall over a sprite, or vice-versa
-  self:renderTransparent()
-  
-  if config.shadder == true then
-    game:shadder()
+
+    -- :: render transparent
+    --  # there is a problem of z-index when render a transparent wall over a sprite, or vice-versa
+    if ray.transparent ~= nil then
+      if ray.transparent.distance <= ray.distance then
+        local wallH = (config.block/ray.transparent.distance)*distProjPlane
+
+        if wallH < 8 then
+          wallH = 8
+        end
+
+        local texture = getMapCurrentTexture(ray.transparent.col, ray.transparent.row, config.grid, config.textures)
+        local tw, th = texture:size()
+        local slice = (ray.transparent.x%config.block)*(tw/config.block)
+
+        if ray.transparent.dir == 1 then
+          slice = (ray.transparent.y%config.block)*(th/config.block)
+        end
+
+        if config.texture == true then
+          canvas3d:compose(texture, slice, 0, 1, th, i*config.strip, h3/2 - wallH/2, config.strip, wallH)
+        else
+          canvas3d:color(0xff, 0xff, 0xff, 0xa0)
+
+          if ray.dir == 1 then
+            canvas3d:color(0x80, 0x80, 0x80, 0xa0)
+          end
+
+          canvas3d:rect("fill", i*config.strip, h3/2 - wallH/2, config.strip, wallH)
+        end
+        
+        if config.shadder == "dark" then
+          -- add some dark shadder
+          local shadder = randomLight*ray.transparent.distance/math.max(w3, h3)
+
+          if shadder > 1.0 then
+            shadder = 1.0
+          end
+
+          local light = shadder * sparseLight
+
+          canvas3d:color(0, 0, 0, light)
+          canvas3d:rect("fill", i*config.strip, h3/2 - wallH/2, config.strip, wallH)
+        end
+      end
+    end
   end
   
   self:renderSprites()
@@ -310,6 +383,8 @@ end
 
 game.renderSprites = function(self)
   local distProjPlane = (w3/2)/math.tan(config.fov/2)
+
+  local canvas3d = config.canvas3d
 
   table.sort(config.sprites, function (a, b)
     local dax = (a.x - game.x)
@@ -322,6 +397,8 @@ game.renderSprites = function(self)
 
     return da > db
   end)
+
+  local rays = game.rays
 
   for i=1,#config.sprites do
     local enemy = config.sprites[i]
@@ -379,50 +456,12 @@ game.renderSprites = function(self)
         spriteSlice = spriteSlice + spriteStrip
           
         if i > 0 and i < w3 then
-          local rayWall = game.rays[math.floor(i/config.strip) + 1]
-          local distance = raySprite.distance/math.cos(interAngle)
+          local rayWall = rays[math.floor(i/config.strip) + 1]
+          local distance = raySprite.distance/cos(interAngle)
 
           if distance < rayWall.distance then
-            config.canvas3d:compose(texture, spriteSlice, 0, 1, ih, i, spriteY, config.strip, spriteH)
+            canvas3d:compose(texture, spriteSlice, 0, 1, ih, i, spriteY, config.strip, spriteH)
           end
-        end
-      end
-    end
-  end
-end
-
-game.renderTransparent = function(self)
-  local distProjPlane = (w3/2)/math.tan(config.fov/2)
-
-  for i=1,#game.rays do
-		local ray = game.rays[i]
-
-    if ray.transparent ~= nil then
-      if ray.transparent.distance <= ray.distance then
-        local wallH = (config.block/ray.transparent.distance)*distProjPlane
-
-        if wallH < 8 then
-          wallH = 8
-        end
-
-        local texture = getMapCurrentTexture(ray.transparent.col, ray.transparent.row, config.grid, config.textures)
-        local tw, th = texture:size()
-        local slice = (ray.transparent.x%config.block)*(tw/config.block)
-
-        if ray.transparent.dir == 1 then
-          slice = (ray.transparent.y%config.block)*(th/config.block)
-        end
-
-        if config.texture == true then
-          config.canvas3d:compose(texture, slice, 0, 1, th, i*config.strip, h3/2 - wallH/2, config.strip, wallH)
-        else
-          config.canvas3d:color(0xff, 0xff, 0xff, 0xa0)
-
-          if ray.dir == 1 then
-            config.canvas3d:color(0x80, 0x80, 0x80, 0xa0)
-          end
-
-          config.canvas3d:rect("fill", i*config.strip, h3/2 - wallH/2, config.strip, wallH)
         end
       end
     end
@@ -436,53 +475,5 @@ game.renderPlayer = function(self)
   texture = texture:scale(w, h)
 
   config.canvas3d:compose(texture, (w3 - w)/2, h3 - h)
-end
-
-game.shadder = function(self)
-  local distProjPlane = (w3/2)/math.tan(config.fov/2)
-  local randomLight = math.random(40, 60)/10
-  local sparseLight = 0xff
-
-  -- consider only the nearest wall, could cause some issues like when texture is disabled
-  for i=1,#game.rays do
-		local ray = game.rays[i]
-		local distance = ray.distance
-
-		if ray.transparent ~= nil and ray.transparent.distance < ray.distance then
-    	distance = ray.transparent.distance
-		end
-
-    local wallH = (config.block/distance)*distProjPlane
-
-    if wallH < 8 then
-      wallH = 8
-    end
-
-    -- add some dark shadder
-    local shadder = randomLight*distance/math.max(w3, h3)
-
-    if shadder > 1.0 then
-      shadder = 1.0
-    end
-
-    local light = shadder * sparseLight
-
-    if light < 0 then
-      light = 0
-    end
-
-    if light > 0xff then
-      light = 0xff
-    end
-
-    config.canvas3d:color(0, 0, 0, light)
-    config.canvas3d:rect("fill", i*config.strip, h3/2 - wallH/2, config.strip, wallH)
-
-    -- add some fog
-    --[[
-    config.canvas3d:color(0x60, 0x60, 0x60, 0xa0)
-    config.canvas3d:rect("fill", i*config.strip, 0, config.strip, h)
-    ]]
-  end
 end
 

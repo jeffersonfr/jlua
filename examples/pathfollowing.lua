@@ -14,8 +14,8 @@ arena = {
 
 robot = {
 	["location"] = {
-		["x"] = math.random(w - 2*64) + 64, 
-		["y"] = math.random(h - 2*64) + 64
+		["x"] = math.random(w - 2*64), 
+		["y"] = math.random(h - 2*64)
 	},
 	["size"] = {
 		["width"] = 48, 

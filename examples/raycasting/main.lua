@@ -3,10 +3,9 @@ dofile("config.lua")
 dofile("config.lua")
 dofile("game.lua")
 dofile("animation.lua")
+dofile("actions.lua")
 
 shootAnimation = createShootAnimation()
-
-local inputDelayCounter = 0
 
 local shootDelayCounter = 0
 local weaponDelay = 1.0
@@ -29,46 +28,34 @@ function input(tick)
     weaponDelay = 0.1 -- machine gun
   end
 
-  if inputDelayCounter == 0 then
-    if (event.key("m").state == "pressed") then
-      if config.minimap == false then
-        config.minimap = true
-      else
-        config.minimap = false
-      end
-    end
+  if (event.key("m").state == "pressed") then
+    config.minimap = false
+  elseif (event.key("M").state == "pressed") then
+    config.minimap = true
+  end
 
-    if (event.key("s").state == "pressed") then
-      if config.shadder == false then
-        config.shadder = true
-      else
-        config.shadder = false
-      end
-    end
+  if (event.key("s").state == "pressed") then
+    config.shadder = "none"
+  elseif (event.key("S").state == "pressed") then
+    config.shadder = "dark"
+  end
 
-    if (event.key("t").state == "pressed") then
-      if config.texture == false then
-        config.texture = true
-      else
-        config.texture = false
-      end
-    end
+  if (event.key("t").state == "pressed") then
+    config.texture = false
+  elseif (event.key("T").state == "pressed") then
+    config.texture = true
+  end
 
-    if (event.key("f").state == "pressed") then
-      if config.floor == false then
-        config.floor = true
-      else
-        config.floor = false
-      end
-    end
+  if (event.key("f").state == "pressed") then
+    config.floor = false
+  elseif (event.key("F").state == "pressed") then
+    config.floor = true
+  end
 
-    if (event.key("p").state == "pressed") then
-      if config.parallax == false then
-        config.parallax = true
-      else
-        config.parallax = false
-      end
-    end
+  if (event.key("p").state == "pressed") then
+    config.parallax = false
+  elseif (event.key("P").state == "pressed") then
+    config.parallax = true
   end
 
   if (event.key("space").state == "pressed") then
@@ -97,11 +84,9 @@ function input(tick)
     end
   end
 
-  if (event.key("l").state == "pressed") then
+  if (event.key("r").state == "pressed") then
     config.strip = 8
-  end
-
-  if (event.key("h").state == "pressed") then
+  elseif (event.key("R").state == "pressed") then
     config.strip = 1
   end
 
@@ -122,13 +107,13 @@ function input(tick)
     0, 0, math.cos(game.radians - strife)*game.walkSpeed*tick, math.sin(game.radians - strife)*game.walkSpeed*tick
 
     if (event.key("left").state == "pressed") then
-      if intersects(game.x + stepx, game.y + stepy) == false then
+      if colide(game.x + stepx, game.y + stepy) == false then
         game.x, game.y = game.x + stepx, game.y + stepy
       end
     end
 
     if (event.key("right").state == "pressed") then
-      if intersects(game.x - stepx, game.y - stepy) == false then
+      if colide(game.x - stepx, game.y - stepy) == false then
         game.x, game.y = game.x - stepx, game.y - stepy
       end
     end
@@ -139,31 +124,25 @@ function input(tick)
     0, 0, math.cos(game.radians)*game.walkSpeed*tick, math.sin(game.radians)*game.walkSpeed*tick
 
 	if (event.key("up").state == "pressed") then
-    if intersects(game.x + stepx, game.y + stepy) == false then
+    if colide(game.x + stepx, game.y + stepy) == false then
       game.x, game.y = game.x + stepx, game.y + stepy
-    elseif intersects(game.x + stepx, game.y) == false then
+    elseif colide(game.x + stepx, game.y) == false then
       game.x, game.y = game.x + stepx, game.y
-    elseif intersects(game.x, game.y + stepy) == false then
+    elseif colide(game.x, game.y + stepy) == false then
       game.x, game.y = game.x, game.y + stepy
     end
 	end
 
 	if (event.key("down").state == "pressed") then
-    if intersects(game.x - stepx, game.y - stepy) == false then
+    if colide(game.x - stepx, game.y - stepy) == false then
       game.x, game.y = game.x - stepx, game.y - stepy
-    elseif intersects(game.x - stepx, game.y) == false then
+    elseif colide(game.x - stepx, game.y) == false then
       game.x, game.y = game.x - stepx, game.y
-    elseif intersects(game.x, game.y - stepy) == false then
+    elseif colide(game.x, game.y - stepy) == false then
       game.x, game.y = game.x, game.y - stepy
     end
 	end
 
-  inputDelayCounter = inputDelayCounter + tick
-
-  if inputDelayCounter > 0.1 then -- 100ms
-    inputDelayCounter = 0
-  end
-  
   shootDelayCounter = shootDelayCounter + tick
 
   if shootDelayCounter > weaponDelay then
@@ -172,7 +151,10 @@ function input(tick)
       shootDelayCounter = 0
 
       shootAnimation:start()
-      createProjectileAnimation(game.x, game.y, 2*math.cos(game.radians)*config.block, 2*math.sin(game.radians)*config.block, 0x0340)
+
+      local vx, vy = math.cos(game.radians)*config.block, math.sin(game.radians)*config.block
+
+      createProjectileAnimation(game.x + vx, game.y + vy, 2*vx, 2*vy, 0x0340)
     end
   end
 end
@@ -255,11 +237,11 @@ createGhostAnimation(100, 100)
 print([[
   jRayCaster v0.0.1a
 
-  l,h -> low/high resolution
-  f -> on/off floor
-  m -> on/off minimap
-  s -> on/off shadder
-  t -> on/off texture
+  R,r -> high/low resolution
+  F,f -> on/off floor
+  M,m -> on/off minimap
+  S,s -> on/off shadder
+  T,t -> on/off texture
   left, right, up, down -> movements
 ]])
 

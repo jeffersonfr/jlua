@@ -106,6 +106,58 @@ std::string KeySymbolToString(jevent::jkeyevent_symbol_t param)
 		return "9";
 	} else if (param == jevent::JKS_0) {
 		return "0";
+	} else if (param == jevent::JKS_A) {
+		return "A";
+	} else if (param == jevent::JKS_B) {
+		return "B";
+	} else if (param == jevent::JKS_C) {
+		return "C";
+	} else if (param == jevent::JKS_D) {
+		return "D";
+	} else if (param == jevent::JKS_E) {
+		return "E";
+	} else if (param == jevent::JKS_F) {
+		return "F";
+	} else if (param == jevent::JKS_G) {
+		return "G";
+	} else if (param == jevent::JKS_H) {
+		return "H";
+	} else if (param == jevent::JKS_I) {
+		return "I";
+	} else if (param == jevent::JKS_J) {
+		return "J";
+	} else if (param == jevent::JKS_K) {
+		return "K";
+	} else if (param == jevent::JKS_L) {
+		return "L";
+	} else if (param == jevent::JKS_M) {
+		return "M";
+	} else if (param == jevent::JKS_N) {
+		return "N";
+	} else if (param == jevent::JKS_O) {
+		return "O";
+	} else if (param == jevent::JKS_P) {
+		return "P";
+	} else if (param == jevent::JKS_Q) {
+		return "Q";
+	} else if (param == jevent::JKS_R) {
+		return "R";
+	} else if (param == jevent::JKS_S) {
+		return "S";
+	} else if (param == jevent::JKS_T) {
+		return "T";
+	} else if (param == jevent::JKS_U) {
+		return "U";
+	} else if (param == jevent::JKS_V) {
+		return "V";
+	} else if (param == jevent::JKS_W) {
+		return "W";
+	} else if (param == jevent::JKS_X) {
+		return "X";
+	} else if (param == jevent::JKS_Y) {
+		return "Y";
+	} else if (param == jevent::JKS_Z) {
+		return "Z";
 	} else if (param == jevent::JKS_a) {
 		return "a";
 	} else if (param == jevent::JKS_b) {
