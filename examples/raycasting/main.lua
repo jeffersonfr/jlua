@@ -29,33 +29,51 @@ function input(tick)
   end
 
   if (event.key("m").state == "pressed") then
-    config.minimap = false
-  elseif (event.key("M").state == "pressed") then
-    config.minimap = true
+    if (event.key("shift").state == "pressed") then
+      config.minimap = true
+    else
+      config.minimap = false
+    end
   end
 
   if (event.key("s").state == "pressed") then
-    config.shadder = "none"
-  elseif (event.key("S").state == "pressed") then
-    config.shadder = "dark"
+    if (event.key("shift").state == "pressed") then
+      config.shadder = "dark"
+    else
+      config.shadder = "none"
+    end
   end
 
   if (event.key("t").state == "pressed") then
-    config.texture = false
-  elseif (event.key("T").state == "pressed") then
-    config.texture = true
+    if (event.key("shift").state == "pressed") then
+      config.texture = true
+    else
+      config.texture = false
+    end
   end
 
   if (event.key("f").state == "pressed") then
-    config.floor = false
-  elseif (event.key("F").state == "pressed") then
-    config.floor = true
+    if (event.key("shift").state == "pressed") then
+      config.floor = true
+    else
+      config.floor = false
+    end
   end
 
   if (event.key("p").state == "pressed") then
-    config.parallax = false
-  elseif (event.key("P").state == "pressed") then
-    config.parallax = true
+    if (event.key("shift").state == "pressed") then
+      config.parallax = true
+    else
+      config.parallax = false
+    end
+  end
+
+  if (event.key("r").state == "pressed") then
+    if (event.key("shift").state == "pressed") then
+      config.strip = 1
+    else
+      config.strip = 8
+    end
   end
 
   if (event.key("space").state == "pressed") then
@@ -82,12 +100,6 @@ function input(tick)
     if shootAnimation.running == false then
       shooted = true
     end
-  end
-
-  if (event.key("r").state == "pressed") then
-    config.strip = 8
-  elseif (event.key("R").state == "pressed") then
-    config.strip = 1
   end
 
   if (event.key("alt").state == "pressed") then

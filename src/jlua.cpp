@@ -59,6 +59,10 @@ jLua & jLua::Instance()
 
 void ModifiersToString(jevent::jkeyevent_modifiers_t param)
 {
+	Event::keys["shift"] = {
+		"released", std::chrono::steady_clock::now()
+	};
+
 	Event::keys["alt"] = {
 		"released", std::chrono::steady_clock::now()
 	};
@@ -67,6 +71,12 @@ void ModifiersToString(jevent::jkeyevent_modifiers_t param)
 		"released", std::chrono::steady_clock::now()
 	};
 
+  if ((jevent::jkeyevent_modifiers_t)(param & jevent::JKM_SHIFT)) {
+    Event::keys["shift"] = {
+      "pressed", std::chrono::steady_clock::now()
+    };
+  }
+  
   if ((jevent::jkeyevent_modifiers_t)(param & jevent::JKM_ALT)) {
     Event::keys["alt"] = {
       "pressed", std::chrono::steady_clock::now()
