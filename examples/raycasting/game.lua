@@ -1,10 +1,20 @@
+local pi = math.pi
+local floor = math.floor
+local sqrt = math.sqrt
+local tan = math.tan
+local atan2 = math.atan2
+local max = math.max
+local random = math.random
+local cos = math.cos
+local sin = math.sin
+
 game = {
   x = w2/2, 
   y = h2/2,
   radians = 0.0,
   walkSpeed = 64.0,
-  rotationSpeed = math.pi/2,
-  fieldOfView = math.pi/4
+  rotationSpeed = pi/2,
+  fieldOfView = pi/4
 }
 
 game.rays = { -- rays.transparent = {}: transparent walls until the solid block
@@ -13,18 +23,18 @@ game.rays = { -- rays.transparent = {}: transparent walls until the solid block
 game.findHorizontalIntersections = function(self, angle, up, left, correction, rangeStart, rangeEnd)
   local xintersect, yintersect, xstep, ystep = 9999, 9999, 9999, 9999
 
-  yintersect = math.floor(game.y/config.block)*config.block
+  yintersect = floor(game.y/config.block)*config.block
   
   if (up == false) then
     yintersect = yintersect + config.block
   end
 
   if angle ~= 0 then
-    xintersect = game.x + (yintersect - game.y)/math.tan(angle)
+    xintersect = game.x + (yintersect - game.y)/tan(angle)
   end
 
   if angle ~= 0 then
-    xstep = config.block/math.tan(angle)
+    xstep = config.block/tan(angle)
 
     if up == true then
       xstep = -xstep
@@ -38,7 +48,7 @@ game.findHorizontalIntersections = function(self, angle, up, left, correction, r
   end
 
   local x, y, w, h = 0, 0, w2, h2
-  local steps = math.floor(math.max(w, h)/config.block)
+  local steps = floor(max(w, h)/config.block)
 
   for i=0,steps do
     x, y = xintersect + i*xstep, yintersect + i*ystep
@@ -47,8 +57,8 @@ game.findHorizontalIntersections = function(self, angle, up, left, correction, r
 			return nil
     end
 
-    local ix, iy = math.floor(x/config.block) + 1, math.floor(y/config.block) + 1
-    local d = math.sqrt((game.x - x)*(game.x - x) + (game.y - y)*(game.y - y)) * correction
+    local ix, iy = floor(x/config.block) + 1, floor(y/config.block) + 1
+    local d = sqrt((game.x - x)*(game.x - x) + (game.y - y)*(game.y - y)) * correction
 
     -- solid walls
     if (up == false and config.grid[iy] ~= nil) then
@@ -74,15 +84,15 @@ end
 game.findVerticalIntersections = function(self, angle, up, left, correction, rangeStart, rangeEnd)
   local xintersect, yintersect, xstep, ystep = 9999, 9999, 9999, 9999
 
-  xintersect = math.floor(game.x/config.block)*config.block
+  xintersect = floor(game.x/config.block)*config.block
   
   if (left == false) then
     xintersect = xintersect + config.block
   end
 
-  yintersect = game.y + (xintersect - game.x)*math.tan(angle)
+  yintersect = game.y + (xintersect - game.x)*tan(angle)
 
-  ystep = config.block*math.tan(angle)
+  ystep = config.block*tan(angle)
 
   if left == true then
     ystep = -ystep
@@ -95,7 +105,7 @@ game.findVerticalIntersections = function(self, angle, up, left, correction, ran
   end
 
   local x, y, w, h = 0, 0, w2, h2
-  local steps = math.floor(math.max(w, h)/config.block)
+  local steps = floor(max(w, h)/config.block)
 
   for i=0,steps do
     x, y = xintersect + i*xstep, yintersect + i*ystep
@@ -104,8 +114,8 @@ game.findVerticalIntersections = function(self, angle, up, left, correction, ran
 			return nil
     end
 
-    local ix, iy = math.floor(x/config.block) + 1, math.floor(y/config.block) + 1
-    local d = math.sqrt((game.x - x)*(game.x - x) + (game.y - y)*(game.y - y)) * correction
+    local ix, iy = floor(x/config.block) + 1, floor(y/config.block) + 1
+    local d = sqrt((game.x - x)*(game.x - x) + (game.y - y)*(game.y - y)) * correction
 
     -- solid walls
     if (left == false and config.grid[iy] ~= nil) then
@@ -130,7 +140,7 @@ game.findVerticalIntersections = function(self, angle, up, left, correction, ran
 end
 
 game.castRays = function(self)
-  local radians = math.fmod(game.radians, 2*math.pi) - config.fov/2.0
+  local radians = (game.radians % (2*pi)) - config.fov/2.0
 
 	rays = {}
 
@@ -138,19 +148,19 @@ game.castRays = function(self)
     local angle = radians + i*config.fov/w3
 
     if angle < 0 then
-      angle = angle + 2*math.pi
+      angle = angle + 2*pi
     end
 
-    angle = math.fmod(angle, 2*math.pi)
+    angle = (angle % (2*pi))
 
     local up = true
     local left = false
 
-    if angle >= 0 and angle < math.pi then
+    if angle >= 0 and angle < pi then
       up = false
     end
 
-    if angle > math.pi/2 and angle < 3*math.pi/2 then
+    if angle > pi/2 and angle < 3*pi/2 then
       left = true
     end
 
@@ -189,13 +199,13 @@ game.parallax = function(self)
   local texture = config.textures[0x0400]
   local sw, sh = texture:size()
   local sliceStrip = sw/360
-  local fov0 = config.fov*180/math.pi
-  local angle = math.fmod(self.radians*180/math.pi, 360)
+  local fov0 = config.fov*180/pi
+  local angle = ((self.radians*180/pi) % 360)
   local startAngle = angle - fov0/2
   local angleStrip = fov0/w3
 
   for i=0,w3,config.strip do
-    local angle = math.fmod(startAngle + i*angleStrip, 360)
+    local angle = ((startAngle + i*angleStrip) % 360)
 
     if angle < 0 then
       angle = angle + 360
@@ -253,9 +263,9 @@ game.render2d = function(self)
 end
 
 game.render3d = function(self)
-  local distProjPlane = (w3/2)/math.tan(config.fov/2)
-  local radians = math.fmod(game.radians, 2*math.pi) - config.fov/2.0
-  local randomLight = math.random(40, 60)/10
+  local distProjPlane = (w3/2)/tan(config.fov/2)
+  local radians = (game.radians % (2*pi)) - config.fov/2.0
+  local randomLight = random(40, 60)/10
   local sparseLight = 0xff
 
   local canvas3d = config.canvas3d
@@ -292,7 +302,7 @@ game.render3d = function(self)
 
     if config.shadder == "dark" then
       -- add some dark shadder
-      local shadder = randomLight*distance/math.max(w3, h3)
+      local shadder = randomLight*distance/max(w3, h3)
 
       if shadder > 1.0 then
         shadder = 1.0
@@ -317,8 +327,8 @@ game.render3d = function(self)
 
       for row = h3/2 + wallH/2, h3 do
         local distance = distProjPlaneDistortion/(row - h3/2)
-        local x = math.floor(distance*cosAngle + game.x)
-        local y = math.floor(distance*sinAngle + game.y)
+        local x = floor(distance*cosAngle + game.x)
+        local y = floor(distance*sinAngle + game.y)
 
         -- local tile = config.textures[config.grid[x >> 6 + 1][y >> 6 + 1] & 0x0fff][1]
         -- local tw, th = tile:size()
@@ -363,7 +373,7 @@ game.render3d = function(self)
         
         if config.shadder == "dark" then
           -- add some dark shadder
-          local shadder = randomLight*ray.transparent.distance/math.max(w3, h3)
+          local shadder = randomLight*ray.transparent.distance/max(w3, h3)
 
           if shadder > 1.0 then
             shadder = 1.0
@@ -382,7 +392,7 @@ game.render3d = function(self)
 end
 
 game.renderSprites = function(self)
-  local distProjPlane = (w3/2)/math.tan(config.fov/2)
+  local distProjPlane = (w3/2)/tan(config.fov/2)
 
   local canvas3d = config.canvas3d
 
@@ -404,21 +414,21 @@ game.renderSprites = function(self)
     local enemy = config.sprites[i]
     local texture = getSpriteCurrentTexture(enemy, config.textures)
     local iw, ih = texture:size()
-    local angle = math.atan2(enemy.y - game.y, enemy.x - game.x)
-    local interAngle = math.fmod(angle - game.radians, 2*math.pi)
+    local angle = atan2(enemy.y - game.y, enemy.x - game.x)
+    local interAngle = ((angle - game.radians) % (2*pi))
 
-    if interAngle > math.pi then
-      interAngle = interAngle - 2*math.pi
+    if interAngle > pi then
+      interAngle = interAngle - 2*pi
     end
 
-    if interAngle < -math.pi then
-      interAngle = interAngle + 2*math.pi
+    if interAngle < -pi then
+      interAngle = interAngle + 2*pi
     end
 
     local raySprite = nil
 
     if interAngle > -config.fov/2 and interAngle < config.fov/2 then
-      local distance = math.sqrt((enemy.x - game.x)*(enemy.x - game.x) + (enemy.y - game.y)*(enemy.y - game.y))
+      local distance = sqrt((enemy.x - game.x)*(enemy.x - game.x) + (enemy.y - game.y)*(enemy.y - game.y))
 
       raySprite = {x = enemy.x, y = enemy.y, angle = interAngle, distance = distance}
     end
@@ -436,7 +446,7 @@ game.renderSprites = function(self)
 
       local spriteH = enemy.percentH*wallH -- the height of config.sprites is 75% of wall height
       local spriteW = spriteH -- *(config.block/config.block) -- the config.sprites has the same width and height
-      local spriteX = math.floor(w3*(raySprite.angle + config.fov/2)/config.fov) -- center of the image
+      local spriteX = floor(w3*(raySprite.angle + config.fov/2)/config.fov) -- center of the image
       local spriteY = h3/2 - wallH/2 + (wallH - spriteH) -- put the sprite on the floor
 
       if enemy.position == -1 then -- put sprite on floor (default)
@@ -447,8 +457,8 @@ game.renderSprites = function(self)
       end
 
       -- render each slice of sprite, if distance is less than the distance of wall
-      local startX = math.floor(spriteX - spriteW/2)
-      local endX = math.floor(spriteX + spriteW/2)
+      local startX = floor(spriteX - spriteW/2)
+      local endX = floor(spriteX + spriteW/2)
       local spriteStrip = config.strip*iw/spriteW
       local spriteSlice = 0
 
@@ -456,7 +466,7 @@ game.renderSprites = function(self)
         spriteSlice = spriteSlice + spriteStrip
           
         if i > 0 and i < w3 then
-          local rayWall = rays[math.floor(i/config.strip) + 1]
+          local rayWall = rays[floor(i/config.strip) + 1]
           local distance = raySprite.distance/cos(interAngle)
 
           if distance < rayWall.distance then

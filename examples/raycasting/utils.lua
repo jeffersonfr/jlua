@@ -35,6 +35,32 @@ function colide(x, y)
   return false
 end
 
+function colideSprite(from, x, y, radius)
+  for i=1,#config.sprites do
+    local sprite = config.sprites[i]
+
+    if sprite ~= from then
+      local distance = math.sqrt((sprite.x - x)*(sprite.x - x) + (sprite.y - y)*(sprite.y - y))
+
+      if distance <= radius then
+        return true
+      end
+    end
+  end
+
+  return false
+end
+
+function colidePlayer(x, y, radius)
+  local distance = math.sqrt((game.x - x)*(game.x - x) + (game.y - y)*(game.y - y))
+
+  if distance <= radius then
+    return true
+  end
+
+  return false
+end
+
 function splitTexture(path, cols, rows)
   local texture = canvas.new(path)
   local w, h = texture:size()
@@ -101,7 +127,4 @@ function getSpriteCurrentTexture(sprite, textureTable)
 
   return textures[1]
 end
-
-cos = math.cos
-sin = math.sin
 

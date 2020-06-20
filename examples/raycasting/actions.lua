@@ -44,7 +44,7 @@ function createGhostAnimation(x, y) -- ghost animation
   fireballAnimation.callback = function()
     local angle = math.atan2(game.y - y, game.x - x)
 
-    createProjectileAnimation(x, y, math.cos(angle)*config.block, math.sin(angle)*config.block, 0x0330)
+    createProjectileAnimation(x, y, math.cos(angle)*config.block, math.sin(angle)*config.block, 0x0330, "enemy")
   end
 
   entity.animations = {
@@ -76,19 +76,45 @@ function createExplosion(x, y)
   end
 end
 
--- Creates a moveable animated sprite of a fireball
-function createProjectileAnimation(x, y, vx, vy, id)
-  local entity = {x = x, y = y, percentH = 0.75, position = -1, id = id}
+-- Creates a moveable animated sprite of a projectil
+function createProjectileAnimation(x, y, vx, vy, id, from)
+  local entity = {x = x, y = y, percentH = 0.75, position = -1, id = id, from = from}
 
   entity.animations = {
     Animation:createSpriteAnimation(entity, vx/2, vy/2, 0, true, 0.0, 0.1, config.textures[entity.id])
   }
 
   entity.animations[1].callback = function(self)
-    if colide(self.sprite.x + vx/2, self.sprite.y + vy/2) then
-      createExplosion(self.sprite.x, self.sprite.y)
+    local step = 0.1
 
-      self:invalidate()
+    for i=0.1,1,step do
+      local px, py = self.sprite.x + i*self.velX, self.sprite.y + i*self.velY
+
+      if colide(px, py) then
+        createExplosion(px - step*self.velX, py - step*self.velY)
+
+        self:invalidate()
+
+        break
+      end
+
+      if self.sprite.from == "player" then
+        if colideSprite(self.sprite, px, py, 3) then
+          createExplosion(px - step*self.velX, py - step*self.velY)
+
+          self:invalidate()
+
+          break
+        end
+      else
+        if colidePlayer(px, py, 3) then
+          createExplosion(px - step*self.velX, py - step*self.velY)
+
+          self:invalidate()
+
+          break
+        end
+      end
     end
   end
 

@@ -166,7 +166,7 @@ function input(tick)
 
       local vx, vy = math.cos(game.radians)*config.block, math.sin(game.radians)*config.block
 
-      createProjectileAnimation(game.x + vx, game.y + vy, 2*vx, 2*vy, 0x0340)
+      createProjectileAnimation(game.x + vx, game.y + vy, 2*vx, 2*vy, 0x0340, "player")
     end
   end
 end
@@ -238,8 +238,8 @@ function render(tick)
   input(tick)
 end
 
-createGhostAnimation(150, 100)
-createGhostAnimation(100, 100)
+--createGhostAnimation(150, 100)
+--createGhostAnimation(100, 100)
 
 --[[ FIX::
 -- - shadder not trepassing transparent walls
@@ -247,7 +247,7 @@ createGhostAnimation(100, 100)
 --]]
 
 print([[
-  jRayCaster v0.0.1a
+jRayCaster v0.0.1a
 
   R,r -> high/low resolution
   F,f -> on/off floor

@@ -1,6 +1,8 @@
-layer0 = canvas.new(1920, 1080)
+local w, h = display.size()
 
-local m = 120
+layer0 = canvas.new(w, h)
+
+local m = 80
 local w, h = layer0:size()
 local cell_width = w/m
 local cell_height = h/m

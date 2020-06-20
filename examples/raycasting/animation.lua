@@ -120,6 +120,10 @@ function Animation:update(tick)
   end
 
   if self.counter >= self.delay then
+    if self.callback ~= nil then
+      self:callback()
+    end
+
     if self.animationType == "sprite" then
       if self.sprite ~= nil then
         local x = self.sprite.x + self.velX
@@ -159,10 +163,6 @@ function Animation:update(tick)
       else
         self.index = index
       end
-    end
-
-    if self.callback ~= nil then
-      self:callback()
     end
 
     self.counter = self.counter - self.delay
