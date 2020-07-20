@@ -166,7 +166,13 @@ function input(tick)
 
       local vx, vy = math.cos(game.radians)*config.block, math.sin(game.radians)*config.block
 
-      createProjectileAnimation(game.x + vx, game.y + vy, 2*vx, 2*vy, 0x0340, "player")
+      if (config.weapon == 1) then
+        createProjectileAnimation(game.x + vx, game.y + vy, 2*vx, 2*vy, 0x0340, "player")
+      elseif (config.weapon == 2) then
+        createProjectileAnimation(game.x + vx, game.y + vy, 2*vx + math.random(2) - 1, 2*vy + math.random(2) - 1, 0x0340, "player")
+      elseif (config.weapon == 3) then
+        createProjectileAnimation(game.x + vx, game.y + vy, 2*vx + math.random(4) - 2, 2*vy + math.random(4) - 2, 0x0340, "player")
+      end
     end
   end
 end

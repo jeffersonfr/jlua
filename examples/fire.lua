@@ -48,8 +48,10 @@ function render(tick)
   end
 
   for j=1,#screen0-1 do
+    local line = screen0[j]
+
     for i=1,#screen0[1] do
-      layer0:pixels(i, j, palette0[screen0[j][i] + 1])
+      layer0:pixels(i, j, palette0[line[i] + 1])
     end
   end
 

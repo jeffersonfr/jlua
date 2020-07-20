@@ -60,4 +60,3 @@ function render(tick)
 
 	canvas.compose(layer0, 0, 0, display.size())
 end
-

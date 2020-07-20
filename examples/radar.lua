@@ -1,26 +1,45 @@
 local w, h = display.size()
 
-local layer0 = canvas.new(w, h)
+local radar = canvas.new(128, 128)
+local rx, ry = radar:size()
 
-angle = 0.0
+radar:color(0x80000000)
+radar:arc("fill", rx/2, ry/2, rx/2, ry/2)
 
-function render(tick)
-  local step = tick*math.pi/2
+local bg = canvas.new("images/map.jpg")
+
+local angle = 0.0
+
+function render_radar(tick)
   local fade = math.floor(math.random()*16) + 8
 
-  layer0:color(fade << 24)
-  layer0:rect("fill", 0, 0, w, h)
-  
-  layer0:color("green")
-  layer0:triangle("fill", 
-    w/2, h/2, 
-    w/2 + 100*math.cos(angle), h/2 + 100*math.sin(angle), 
-    w/2 + 100*math.cos(angle + step), h/2 + 100*math.sin(angle + step))
+  angle = math.fmod(angle + tick*math.pi/2, 2*math.pi)
 
-  layer0:color("grey");
-  layer0:arc("draw", w/2, h/2, 100)
+  for j=0,128-1 do
+    for i=0,128-1 do
+      local pixel = radar:pixels(i, j)
 
-	canvas.compose(layer0, 0, 0, display.size())
-  
-  angle = math.fmod(angle + step, 2*math.pi)
+      if ((pixel & 0xff000000) ~= 0) then
+        pixel = math.floor(pixel * 0.98) & 0xff000000 | pixel & 0x00ffffff
+      end
+
+      radar:pixels(i, j, pixel)
+    end
+  end
+
+  radar:color("green")
+  radar:arc("fill", rx/2, ry/2, rx/2, ry/2, angle, angle + 0.1)
+  radar:color("grey");
+  radar:arc("draw", rx/2, ry/2, rx/2, ry/2)
+	
+  canvas.compose(radar, 1280 - rx - 64, 64)
+end
+
+function render_map(tick)
+  canvas.compose(bg, 0, 0, w, h)
+end
+
+function render(tick)
+  render_map(tick)
+  render_radar(tick)
 end

@@ -79,8 +79,10 @@ static int lua_Font_extends(lua_State *l)
       size {0, 0};
 
     if (font != nullptr) {
-      size.width = font->font->GetStringWidth(text);
-      size.height = font->font->GetSize();
+      jgui::jfont_extends_t 
+        t = font->font->GetStringExtends(text);
+
+      size = jgui::jsize_t<float>{t.size.width - t.bearing.x - (t.advance.x - t.size.width), t.size.height - t.bearing.y};
     }
 
 		lua_pushnumber(l, size.width);

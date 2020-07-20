@@ -47,7 +47,7 @@ int lua_Canvas_new(lua_State *l)
     Canvas
       **udata = (Canvas **)lua_newuserdata(l, sizeof(Canvas *));
 
-    *udata = new Canvas(new jgui::BufferedImage(jgui::JPF_RGB32, {w, h}));
+    *udata = new Canvas(new jgui::BufferedImage(jgui::JPF_ARGB, {w, h}));
 		
 		(*udata)->image->GetGraphics()->SetFont(&jgui::Font::NORMAL);
   }
@@ -95,9 +95,7 @@ static int lua_Canvas_clear(lua_State *l)
     *g = canvas->image->GetGraphics();
 	
   if (lua_gettop(l) == 1) { // INFO:: canvas:clear()
-    g->SetCompositeFlags(jgui::JCF_SRC);
 	  g->Clear();
-    g->SetCompositeFlags(jgui::JCF_SRC_OVER);
 
 		return 0;
   } else if (lua_gettop(l) == 5) { // INFO:: canvas:clear(r, g, b, a)
@@ -107,9 +105,7 @@ static int lua_Canvas_clear(lua_State *l)
       w = (int)luaL_checknumber(l, 4),
       h = (int)luaL_checknumber(l, 5);
 
-    g->SetCompositeFlags(jgui::JCF_SRC);
 	  g->Clear({x, y, w, h});
-    g->SetCompositeFlags(jgui::JCF_SRC_OVER);
 
 		return 0;
 	}
@@ -309,9 +305,10 @@ static int lua_Canvas_arc(lua_State *l)
       x = (int)luaL_checknumber(l, 3),
       y = (int)luaL_checknumber(l, 4),
       sx = (int)luaL_checknumber(l, 5),
-      sy = (int)luaL_checknumber(l, 6),
-      arc0 = (int)luaL_checknumber(l, 7),
-      arc1 = (int)luaL_checknumber(l, 8);
+      sy = (int)luaL_checknumber(l, 6);
+    float
+      arc0 = (float)luaL_checknumber(l, 7),
+      arc1 = (float)luaL_checknumber(l, 8);
 
     if (method == "draw") {
 			g->DrawArc({x, y}, {sx, sy}, arc0, arc1);
@@ -402,7 +399,9 @@ static int lua_Canvas_pixels(lua_State *l)
     uint32_t
       color = (uint32_t)luaL_checknumber(l, 4);
 
-    g->SetRawRGB(color, {x, y});
+    g->SetCompositeFlags(jgui::JCF_SRC);
+    g->SetRGB(color, {x, y});
+    g->SetCompositeFlags(jgui::JCF_SRC_OVER);
 
 		return 0;
   } else if (lua_gettop(l) == 5) { // INFO:: canvas:pixels(x, y, w, h)
@@ -443,6 +442,39 @@ static int lua_Canvas_pixels(lua_State *l)
     }
 
     return 1;
+  } else if (lua_gettop(l) == 6) { // INFO:: canvas:pixels(x, y, w, h, {pixels})
+    int 
+      x = (int)luaL_checknumber(l, 2),
+      y = (int)luaL_checknumber(l, 3),
+      w = (int)luaL_checknumber(l, 4),
+      h = (int)luaL_checknumber(l, 5);
+    uint32_t
+      buffer[w*h],
+      *ptr = buffer,
+      *end = ptr + w*h;
+
+    lua_pushnil(l);
+
+    while (lua_next(l, -2)) {
+      uint32_t
+        pixel = (uint32_t)luaL_checknumber(l, -1);
+
+      *ptr++ = pixel;
+
+      lua_pop(l, 1);
+      
+      if (ptr == end) {
+        break;
+      }
+    }
+      
+    lua_pop(l, 1);
+
+    g->SetCompositeFlags(jgui::JCF_SRC);
+    g->SetRGBArray(buffer, {x, y, w, h});
+    g->SetCompositeFlags(jgui::JCF_SRC_OVER);
+
+    return 0;
   } else if (lua_gettop(l) == 7) { // INFO:: canvas:pixels(x, y, r, g, b, a)
     int 
       x = (int)luaL_checknumber(l, 2),
@@ -462,6 +494,8 @@ static int lua_Canvas_pixels(lua_State *l)
 	return 0;
 }
 
+extern int lua_Font_new(lua_State *l);
+
 static int lua_Canvas_font(lua_State *l)
 {
   Canvas 
@@ -469,7 +503,23 @@ static int lua_Canvas_font(lua_State *l)
   jgui::Graphics
     *g = canvas->image->GetGraphics();
 	
-  if (lua_gettop(l) == 2) { // INFO:: canvas:font(font)
+  if (lua_gettop(l) == 1) { // INFO:: canvas:font()
+    if (g->GetFont() == nullptr) {
+      lua_pushnil(l);
+
+      return 1;
+    }
+
+    Font
+      **udata = (Font **)lua_newuserdata(l, sizeof(Font *));
+
+    *udata = new Font(g->GetFont()->GetSize());
+
+    luaL_getmetatable(l, "luaL_font");
+    lua_setmetatable(l, -2);
+
+    return 1;
+  } else if (lua_gettop(l) == 2) { // INFO:: canvas:font(font)
 		Font
 			*font = Font::Check(l, 2);
 
@@ -807,6 +857,7 @@ void Canvas::Register(lua_State *l)
 			{ "scale", lua_Canvas_scale},
 			{ "rotate", lua_Canvas_rotate},
 			{ "crop", lua_Canvas_crop},
+			{ "font", lua_Canvas_font},
 			{ "compose", lua_Canvas_compose},
 			{ NULL, NULL }
 		};

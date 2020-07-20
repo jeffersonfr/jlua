@@ -175,17 +175,19 @@ game.castRays = function(self)
       intersection = v
     end
 
-    -- find intersection for transparent block
-    local h = self:findHorizontalIntersections(angle, up, left, correction, 0x0300, 0x0400)
-    local v = self:findVerticalIntersections(angle, up, left, correction, 0x0300, 0x0400)
+    if (intersection ~= nil) then
+      -- find intersection for transparent block
+      local h = self:findHorizontalIntersections(angle, up, left, correction, 0x0300, 0x0400)
+      local v = self:findVerticalIntersections(angle, up, left, correction, 0x0300, 0x0400)
 
-    intersection.transparent = h
+      intersection.transparent = h
 
-    if (h == nil or (v ~= nil and v.distance < h.distance)) then
-      intersection.transparent = v
+      if (h == nil or (v ~= nil and v.distance < h.distance)) then
+        intersection.transparent = v
+      end
     end
 
-		rays[#rays + 1] = intersection
+    rays[#rays + 1] = intersection
   end
 
   game.rays = rays
@@ -204,6 +206,8 @@ game.parallax = function(self)
   local startAngle = angle - fov0/2
   local angleStrip = fov0/w3
 
+  local canvas3d_compose = config.canvas3d.compose
+
   for i=0,w3,config.strip do
     local angle = ((startAngle + i*angleStrip) % 360)
 
@@ -211,7 +215,7 @@ game.parallax = function(self)
       angle = angle + 360
     end
 
-    config.canvas3d:compose(texture, angle*sliceStrip, 0, 1, sh, i, 0, config.strip, h3/2)
+    canvas3d_compose(config.canvas3d, texture, angle*sliceStrip, 0, 1, sh, i, 0, config.strip, h3/2)
   end
 end
 
@@ -314,7 +318,8 @@ game.render3d = function(self)
       canvas3d:rect("fill", i*config.strip, h3/2 - wallH/2, config.strip, wallH)
     end
 
-    if config.floor == true and config.shadder == "none" then -- casting floor
+    -- floor casting
+    if config.floor == true and config.shadder == "none" then
       local rayangle = radians + i*config.fov/#rays
       local fovAngle = rayangle - radians - config.fov/2
       local distProjPlaneDistortion = config.playerHeight*distProjPlane/cos(fovAngle)
@@ -324,6 +329,8 @@ game.render3d = function(self)
       local tw, th = tile:size()
 
       tw, th = tw - 1, th - 1
+
+      local pixels = {}
 
       for row = h3/2 + wallH/2, h3 do
         local distance = distProjPlaneDistortion/(row - h3/2)
@@ -336,9 +343,11 @@ game.render3d = function(self)
         local pixel = tile:pixels(x & tw, y & th)
 
         for k=1,config.strip do
-          canvas3d:pixels(i*config.strip + k, row, pixel)
+          pixels[#pixels + 1] = pixel
         end
       end
+       
+      canvas3d:pixels(i*config.strip, h3/2 + wallH/2, config.strip, #pixels, pixels)
     end
 
     -- :: render transparent
@@ -469,7 +478,7 @@ game.renderSprites = function(self)
           local rayWall = rays[floor(i/config.strip) + 1]
           local distance = raySprite.distance/cos(interAngle)
 
-          if distance < rayWall.distance then
+          if distance < rayWall.distance + config.block then
             canvas3d:compose(texture, spriteSlice, 0, 1, ih, i, spriteY, config.strip, spriteH)
           end
         end

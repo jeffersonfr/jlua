@@ -57,40 +57,7 @@ jLua & jLua::Instance()
 	return instance;
 }
 
-void ModifiersToString(jevent::jkeyevent_modifiers_t param)
-{
-	Event::keys["shift"] = {
-		"released", std::chrono::steady_clock::now()
-	};
-
-	Event::keys["alt"] = {
-		"released", std::chrono::steady_clock::now()
-	};
-
-	Event::keys["ctrl"] = {
-		"released", std::chrono::steady_clock::now()
-	};
-
-  if ((jevent::jkeyevent_modifiers_t)(param & jevent::JKM_SHIFT)) {
-    Event::keys["shift"] = {
-      "pressed", std::chrono::steady_clock::now()
-    };
-  }
-  
-  if ((jevent::jkeyevent_modifiers_t)(param & jevent::JKM_ALT)) {
-    Event::keys["alt"] = {
-      "pressed", std::chrono::steady_clock::now()
-    };
-  }
-  
-  if ((jevent::jkeyevent_modifiers_t)(param & jevent::JKM_CONTROL)) {
-    Event::keys["ctrl"] = {
-      "pressed", std::chrono::steady_clock::now()
-    };
-  }
-}
-
-std::string KeySymbolToString(jevent::jkeyevent_symbol_t param) 
+static std::string KeySymbolToString(jevent::jkeyevent_symbol_t param) 
 {
 	if (param == jevent::JKS_SPACE) {
 		return "space";
@@ -228,12 +195,18 @@ std::string KeySymbolToString(jevent::jkeyevent_symbol_t param)
 		return "up";
 	} else if (param == jevent::JKS_CURSOR_DOWN) {
 		return "down";
+	} else if (param == jevent::JKS_SHIFT) {
+		return "shift";
+	} else if (param == jevent::JKS_ALT) {
+		return "alt";
+	} else if (param == jevent::JKS_CONTROL) {
+		return "ctrl";
   }
 
 	return "unknown";
 }
 
-std::string MouseButtonToString(jevent::jmouseevent_button_t param) 
+static std::string MouseButtonToString(jevent::jmouseevent_button_t param) 
 {
 	if (param == jevent::JMB_BUTTON1) {
 		return "0";
@@ -252,8 +225,6 @@ bool jLua::KeyPressed(jevent::KeyEvent *event)
 		"pressed", std::chrono::steady_clock::now()
 	};
 
-	ModifiersToString(event->GetModifiers());
-
 	return true;
 }
 
@@ -262,8 +233,6 @@ bool jLua::KeyReleased(jevent::KeyEvent *event)
 	Event::keys[KeySymbolToString(event->GetSymbol())] = {
 		"released", std::chrono::steady_clock::now()
 	};
-
-	ModifiersToString(event->GetModifiers());
 
 	return true;
 }
