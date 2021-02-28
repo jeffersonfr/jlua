@@ -20,7 +20,7 @@
 #include "event.h"
 #include "jlua.h"
 
-#include "jgui/jbufferedimage.h"
+#include "jcanvas/core/jbufferedimage.h"
 
 std::map<std::string, Event::key_state_t>
 	Event::keys;

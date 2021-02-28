@@ -20,7 +20,7 @@
 #ifndef LUA_FONT_H
 #define LUA_FONT_H
 
-#include "jgui/jfont.h"
+#include "jcanvas/core/jfont.h"
 
 #include "utils.h"
 
@@ -29,7 +29,7 @@
 class Font {
 
 	public:
-		jgui::Font
+		jcanvas::Font
 			*font;
 
 	public:

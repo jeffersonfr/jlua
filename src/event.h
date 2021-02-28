@@ -20,11 +20,12 @@
 #ifndef LUA_EVENT_H
 #define LUA_EVENT_H
 
-#include "jgui/jimage.h"
+#include "jcanvas/core/jimage.h"
 
 #include "utils.h"
 
 #include <chrono>
+#include <map>
 
 class Event {
 
@@ -41,7 +42,7 @@ class Event {
 				state;
 			std::chrono::steady_clock::time_point
 				timestamp;
-			jgui::jpoint_t<int>
+			jcanvas::jpoint_t<int>
 				position;
 			int
 				count;

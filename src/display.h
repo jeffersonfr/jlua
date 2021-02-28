@@ -20,7 +20,7 @@
 #ifndef LUA_DISPLAY_H
 #define LUA_DISPLAY_H
 
-#include "jgui/jimage.h"
+#include "jcanvas/core/jimage.h"
 
 #include "utils.h"
 

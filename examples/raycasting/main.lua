@@ -244,8 +244,8 @@ function render(tick)
   input(tick)
 end
 
---createGhostAnimation(150, 100)
---createGhostAnimation(100, 100)
+createGhostAnimation(150, 100)
+createGhostAnimation(100, 100)
 
 --[[ FIX::
 -- - shadder not trepassing transparent walls

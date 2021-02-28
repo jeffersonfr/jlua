@@ -21,8 +21,7 @@
 #include "font.h"
 #include "jlua.h"
 
-#include "jcommon/jstringutils.h"
-#include "jgui/jbufferedimage.h"
+#include "jcanvas/core/jbufferedimage.h"
 
 static const std::string
   METATABLE = "luaL_canvas";
@@ -36,9 +35,9 @@ int lua_Canvas_new(lua_State *l)
     Canvas
       **udata = (Canvas **)lua_newuserdata(l, sizeof(Canvas *));
 
-    *udata = new Canvas(new jgui::BufferedImage(jLua::Instance().base + "/" + path));
+    *udata = new Canvas(new jcanvas::BufferedImage(jLua::Instance().base + "/" + path));
 	
-		(*udata)->image->GetGraphics()->SetFont(&jgui::Font::NORMAL);
+		(*udata)->image->GetGraphics()->SetFont(&jcanvas::Font::Normal);
   } else if (lua_gettop(l) == 2) { // INFO:(w, h): create a image buffer to be used during the execution
     const int
       w = luaL_checknumber(l, 1),
@@ -47,9 +46,9 @@ int lua_Canvas_new(lua_State *l)
     Canvas
       **udata = (Canvas **)lua_newuserdata(l, sizeof(Canvas *));
 
-    *udata = new Canvas(new jgui::BufferedImage(jgui::JPF_ARGB, {w, h}));
+    *udata = new Canvas(new jcanvas::BufferedImage(jcanvas::JPF_ARGB, {w, h}));
 		
-		(*udata)->image->GetGraphics()->SetFont(&jgui::Font::NORMAL);
+		(*udata)->image->GetGraphics()->SetFont(&jcanvas::Font::Normal);
   }
 
 	luaL_getmetatable(l, METATABLE.c_str());
@@ -72,12 +71,12 @@ static int lua_Canvas_size(lua_State *l)
 {
 	Canvas 
 		*canvas = Canvas::Check(l, 1);
-  jgui::jsize_t<int>
+  jcanvas::jpoint_t<int>
     size = canvas->image->GetSize();
 
 	if (lua_gettop(l) == 1) {
-		lua_pushinteger(l, size.width);
-		lua_pushinteger(l, size.height);
+		lua_pushinteger(l, size.x);
+		lua_pushinteger(l, size.y);
 
 		return 2;
 	}
@@ -91,7 +90,7 @@ static int lua_Canvas_clear(lua_State *l)
 {
   Canvas 
     *canvas = Canvas::Check(l, 1);
-  jgui::Graphics
+  jcanvas::Graphics
     *g = canvas->image->GetGraphics();
 	
   if (lua_gettop(l) == 1) { // INFO:: canvas:clear()
@@ -119,11 +118,11 @@ static int lua_Canvas_color(lua_State *l)
 {
   Canvas 
     *canvas = Canvas::Check(l, 1);
-  jgui::Graphics
+  jcanvas::Graphics
     *g = canvas->image->GetGraphics();
 
   if (lua_gettop(l) == 1) { // INFO:(): returns the current color [r, g, b, a]
-    jgui::jcolor_t<float> 
+    jcanvas::jcolor_t<float> 
       color = g->GetColor();
 
     lua_pushnumber(l, color[2]);
@@ -178,7 +177,7 @@ static int lua_Canvas_rect(lua_State *l)
 {
   Canvas 
     *canvas = Canvas::Check(l, 1);
-  jgui::Graphics
+  jcanvas::Graphics
     *g = canvas->image->GetGraphics();
 	
   if (lua_gettop(l) == 6) { // INFO:: canvas:rect(method, x, y, w, h)
@@ -208,7 +207,7 @@ static int lua_Canvas_line(lua_State *l)
 {
   Canvas 
     *canvas = Canvas::Check(l, 1);
-  jgui::Graphics
+  jcanvas::Graphics
     *g = canvas->image->GetGraphics();
 	
   if (lua_gettop(l) == 5) { // INFO:: canvas:line(method, x, y, w, h)
@@ -232,7 +231,7 @@ static int lua_Canvas_triangle(lua_State *l)
 {
   Canvas 
     *canvas = Canvas::Check(l, 1);
-  jgui::Graphics
+  jcanvas::Graphics
     *g = canvas->image->GetGraphics();
 	
   if (lua_gettop(l) == 8) { // INFO:: canvas:triangle(method, x0, y0, x1, y1, x2, y2)
@@ -264,7 +263,7 @@ static int lua_Canvas_arc(lua_State *l)
 {
   Canvas 
     *canvas = Canvas::Check(l, 1);
-  jgui::Graphics
+  jcanvas::Graphics
     *g = canvas->image->GetGraphics();
 	
   if (lua_gettop(l) == 5) { // INFO:: canvas:arc(method, x, y, radius)
@@ -328,7 +327,7 @@ static int lua_Canvas_polygon(lua_State *l)
 {
   Canvas 
     *canvas = Canvas::Check(l, 1);
-  jgui::Graphics
+  jcanvas::Graphics
     *g = canvas->image->GetGraphics();
 	
   if (lua_gettop(l) >= 4) { // INFO:: canvas:polygon(method, x, y [, x, y]*)
@@ -341,7 +340,7 @@ static int lua_Canvas_polygon(lua_State *l)
       extra = lua_gettop(l) - 4;
 
     if (extra%2 == 0) {
-      std::vector<jgui::jpoint_t<int>> 
+      std::vector<jcanvas::jpoint_t<int>> 
         points;
 
 			for (int i=0; i<extra; i+=2) {
@@ -353,13 +352,13 @@ static int lua_Canvas_polygon(lua_State *l)
 			}
 
       if (method == "open") {
-        g->DrawPolygon(jgui::jpoint_t<int>{x, y}, points, false);
+        g->DrawPolygon(jcanvas::jpoint_t<int>{x, y}, points, false);
       } else if (method == "close") {
-        g->DrawPolygon(jgui::jpoint_t<int>{x, y}, points, true);
+        g->DrawPolygon(jcanvas::jpoint_t<int>{x, y}, points, true);
       } else if (method == "odd") {
-        g->FillPolygon(jgui::jpoint_t<int>{x, y}, points, false);
+        g->FillPolygon(jcanvas::jpoint_t<int>{x, y}, points, false);
       } else { // if (method == "even") {
-        g->FillPolygon(jgui::jpoint_t<int>{x, y}, points, true);
+        g->FillPolygon(jcanvas::jpoint_t<int>{x, y}, points, true);
       }
 
       return 0;
@@ -375,7 +374,7 @@ static int lua_Canvas_pixels(lua_State *l)
 {
   Canvas 
     *canvas = Canvas::Check(l, 1);
-  jgui::Graphics
+  jcanvas::Graphics
     *g = canvas->image->GetGraphics();
 	
   if (lua_gettop(l) == 3) { // INFO:: canvas:pixels(x, y) returns the argb at the {x, y} [r, g, b, a]
@@ -399,9 +398,9 @@ static int lua_Canvas_pixels(lua_State *l)
     uint32_t
       color = (uint32_t)luaL_checknumber(l, 4);
 
-    g->SetCompositeFlags(jgui::JCF_SRC);
+    g->SetCompositeFlags(jcanvas::JCF_SRC);
     g->SetRGB(color, {x, y});
-    g->SetCompositeFlags(jgui::JCF_SRC_OVER);
+    g->SetCompositeFlags(jcanvas::JCF_SRC_OVER);
 
 		return 0;
   } else if (lua_gettop(l) == 5) { // INFO:: canvas:pixels(x, y, w, h)
@@ -470,9 +469,9 @@ static int lua_Canvas_pixels(lua_State *l)
       
     lua_pop(l, 1);
 
-    g->SetCompositeFlags(jgui::JCF_SRC);
+    g->SetCompositeFlags(jcanvas::JCF_SRC);
     g->SetRGBArray(buffer, {x, y, w, h});
-    g->SetCompositeFlags(jgui::JCF_SRC_OVER);
+    g->SetCompositeFlags(jcanvas::JCF_SRC_OVER);
 
     return 0;
   } else if (lua_gettop(l) == 7) { // INFO:: canvas:pixels(x, y, r, g, b, a)
@@ -500,7 +499,7 @@ static int lua_Canvas_font(lua_State *l)
 {
   Canvas 
     *canvas = Canvas::Check(l, 1);
-  jgui::Graphics
+  jcanvas::Graphics
     *g = canvas->image->GetGraphics();
 	
   if (lua_gettop(l) == 1) { // INFO:: canvas:font()
@@ -537,7 +536,7 @@ static int lua_Canvas_text(lua_State *l)
 {
   Canvas 
     *canvas = Canvas::Check(l, 1);
-  jgui::Graphics
+  jcanvas::Graphics
     *g = canvas->image->GetGraphics();
 	
   if (lua_gettop(l) == 4) { // INFO:: canvas:text(str, x, y)
@@ -547,7 +546,7 @@ static int lua_Canvas_text(lua_State *l)
       x = luaL_checknumber(l, 3),
       y = luaL_checknumber(l, 4);
 
-		g->DrawString(text, jgui::jpoint_t<int>{x, y});
+		g->DrawString(text, jcanvas::jpoint_t<int>{x, y});
 
 		return 0;
   } else if (lua_gettop(l) == 4) { // INFO:: canvas:text(str, x, y, w, h)
@@ -559,7 +558,7 @@ static int lua_Canvas_text(lua_State *l)
       w = luaL_checknumber(l, 5),
       h = luaL_checknumber(l, 6);
 
-		g->DrawString(text, jgui::jrect_t<int>{x, y, w, h});
+		g->DrawString(text, jcanvas::jrect_t<int>{x, y, w, h});
 
 		return 0;
   } else if (lua_gettop(l) == 4) { // INFO:: canvas:text(str, x, y, w, h, halign, valign)
@@ -573,32 +572,32 @@ static int lua_Canvas_text(lua_State *l)
     std::string
       ha = luaL_checkstring(l, 7),
       va = luaL_checkstring(l, 8);
-    jgui::jhorizontal_align_t 
-      halign = jgui::JHA_LEFT;
-    jgui::jvertical_align_t 
-      valign = jgui::JVA_TOP;
+    jcanvas::jhorizontal_align_t 
+      halign = jcanvas::JHA_LEFT;
+    jcanvas::jvertical_align_t 
+      valign = jcanvas::JVA_TOP;
 
     if (ha == "left") {
-      halign = jgui::JHA_LEFT;
+      halign = jcanvas::JHA_LEFT;
     } else if (ha == "center") {
-      halign = jgui::JHA_CENTER;
+      halign = jcanvas::JHA_CENTER;
     } else if (ha == "right") {
-      halign = jgui::JHA_RIGHT;
+      halign = jcanvas::JHA_RIGHT;
     } else if (ha == "justified") {
-      halign = jgui::JHA_JUSTIFY;
+      halign = jcanvas::JHA_JUSTIFY;
     }
 
     if (va == "top") {
-      valign = jgui::JVA_TOP;
+      valign = jcanvas::JVA_TOP;
     } else if (va == "center") {
-      valign = jgui::JVA_CENTER;
+      valign = jcanvas::JVA_CENTER;
     } else if (va == "bottom") {
-      valign = jgui::JVA_BOTTOM;
+      valign = jcanvas::JVA_BOTTOM;
     } else if (va == "justified") {
-      valign = jgui::JVA_JUSTIFY;
+      valign = jcanvas::JVA_JUSTIFY;
     }
 
-		g->DrawString(text, jgui::jrect_t<int>{x, y, w, h}, halign, valign);
+		g->DrawString(text, jcanvas::jrect_t<int>{x, y, w, h}, halign, valign);
 
 		return 0;
 	}
@@ -612,14 +611,14 @@ static int lua_Canvas_pen(lua_State *l)
 {
   Canvas 
     *canvas = Canvas::Check(l, 1);
-  jgui::Graphics
+  jcanvas::Graphics
     *g = canvas->image->GetGraphics();
 	
   if (lua_gettop(l) == 2) { // INFO:: canvas:pen(size)
     int
       size = luaL_checknumber(l, 2);
 
-    jgui::jpen_t 
+    jcanvas::jpen_t 
       pen = g->GetPen();
 
     pen.width = size;
@@ -647,7 +646,7 @@ static int lua_Canvas_scale(lua_State *l)
     Canvas
       **udata = (Canvas **)lua_newuserdata(l, sizeof(Canvas *));
 
-    canvas->image->GetGraphics()->SetAntialias(jgui::JAM_NONE);
+    canvas->image->GetGraphics()->SetAntialias(jcanvas::JAM_NONE);
 
     *udata = new Canvas(canvas->image->Scale({w, h}));
 
@@ -734,7 +733,7 @@ static int lua_Canvas_compose(lua_State *l)
 {
   Canvas 
     *canvas = nullptr;
-	jgui::Graphics
+	jcanvas::Graphics
 		*g = nullptr;
 	int
 		offset = 0;
@@ -755,7 +754,7 @@ static int lua_Canvas_compose(lua_State *l)
     return 0;
   }
 
-  g->SetBlittingFlags(jgui::JBF_NEAREST);
+  g->SetBlittingFlags(jcanvas::JBF_NEAREST);
 
   if (lua_gettop(l) == 4 - offset) { // INFO:: canvas:compose(src, dx, dy)
     Canvas 
@@ -764,7 +763,7 @@ static int lua_Canvas_compose(lua_State *l)
       dx = (int)luaL_checknumber(l, 3 - offset),
       dy = (int)luaL_checknumber(l, 4 - offset);
 
-    g->DrawImage(src->image, jgui::jpoint_t<int>{dx, dy});
+    g->DrawImage(src->image, jcanvas::jpoint_t<int>{dx, dy});
 
 		return 0;
   } else if (lua_gettop(l) == 6 - offset) { // INFO:: canvas:compose(src, dx, dy, dw, dh)
@@ -776,7 +775,7 @@ static int lua_Canvas_compose(lua_State *l)
       dw = (int)luaL_checknumber(l, 5 - offset),
       dh = (int)luaL_checknumber(l, 6 - offset);
 
-    g->DrawImage(src->image, jgui::jrect_t<int>{dx, dy, dw, dh});
+    g->DrawImage(src->image, jcanvas::jrect_t<int>{dx, dy, dw, dh});
 
 		return 0;
   } else if (lua_gettop(l) == 8 - offset) { // INFO:: canvas:compose(src, sx, sy, sw, sh, dx, dy)
@@ -790,7 +789,7 @@ static int lua_Canvas_compose(lua_State *l)
       dx = (int)luaL_checknumber(l, 7 - offset),
       dy = (int)luaL_checknumber(l, 8 - offset);
 
-    g->DrawImage(src->image, jgui::jrect_t<int>{sx, sy, sw, sh}, jgui::jpoint_t<int>{dx, dy});
+    g->DrawImage(src->image, jcanvas::jrect_t<int>{sx, sy, sw, sh}, jcanvas::jpoint_t<int>{dx, dy});
 
 		return 0;
   } else if (lua_gettop(l) == 10 - offset) { // INFO:: canvas:compose(src, sx, sy, sw, sh, dx, dy, dw, dh)
@@ -806,7 +805,7 @@ static int lua_Canvas_compose(lua_State *l)
       dw = (int)luaL_checknumber(l, 9 - offset),
       dh = (int)luaL_checknumber(l, 10 - offset);
 
-    g->DrawImage(src->image, jgui::jrect_t<int>{sx, sy, sw, sh}, jgui::jrect_t<int>{dx, dy, dw, dh});
+    g->DrawImage(src->image, jcanvas::jrect_t<int>{sx, sy, sw, sh}, jcanvas::jrect_t<int>{dx, dy, dw, dh});
 
 		return 0;
 	}
@@ -816,7 +815,7 @@ static int lua_Canvas_compose(lua_State *l)
 	return 0;
 }
 
-Canvas::Canvas(jgui::Image *image):
+Canvas::Canvas(jcanvas::Image *image):
   image(image)
 {
   if (image == nullptr) {

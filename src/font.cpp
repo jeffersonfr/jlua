@@ -75,18 +75,18 @@ static int lua_Font_extends(lua_State *l)
   if (lua_gettop(l) == 2) { // INFO:: font:extends(str)
     std::string
       text = luaL_checkstring(l, 2);
-    jgui::jsize_t<int>
+    jcanvas::jpoint_t<int>
       size {0, 0};
 
     if (font != nullptr) {
-      jgui::jfont_extends_t 
+      jcanvas::jfont_extends_t 
         t = font->font->GetStringExtends(text);
 
-      size = jgui::jsize_t<float>{t.size.width - t.bearing.x - (t.advance.x - t.size.width), t.size.height - t.bearing.y};
+      size = jcanvas::jpoint_t<float>{t.size.x - t.bearing.x - (t.advance.x - t.size.x), t.size.y - t.bearing.y};
     }
 
-		lua_pushnumber(l, size.width);
-		lua_pushnumber(l, size.height);
+		lua_pushnumber(l, size.x);
+		lua_pushnumber(l, size.y);
 
 		return 2;
 	}
@@ -98,7 +98,7 @@ static int lua_Font_extends(lua_State *l)
 
 Font::Font(int size)
 {
-	font = new jgui::Font("default", (jgui::jfont_attributes_t)(jgui::JFA_NORMAL), size);
+	font = new jcanvas::Font("default", (jcanvas::jfont_attributes_t)(jcanvas::JFA_NORMAL), size);
 }
 
 Font::~Font()

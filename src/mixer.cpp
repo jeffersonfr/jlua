@@ -20,18 +20,20 @@
 #include "mixer.h"
 #include "jlua.h"
 
-#include "jmedia/jplayermanager.h"
-#include "jmedia/jaudiomixercontrol.h"
+// #include "jmedia/jplayermanager.h"
+// #include "jmedia/jaudiomixercontrol.h"
 
 static const std::string
   METATABLE = "luaL_mixer";
 
+/*
 static jmedia::Player * MixerInstance()
 {
   static jmedia::Player *instance = jmedia::PlayerManager::CreatePlayer("mixer://");
 
   return instance;
 }
+*/
 
 static int lua_Mixer_new(lua_State *l)
 {
@@ -53,16 +55,19 @@ static int lua_Mixer_new(lua_State *l)
 
 static int lua_Mixer_gc(lua_State *l)
 {
+  /*
 	Mixer 
 		*mixer = Mixer::Check(l, 1);
 
 	delete mixer;
+  */
 
 	return 0;
 }
 
 static int lua_Mixer_start(lua_State *l)
 {
+  /*
   Mixer 
     *mixer = Mixer::Check(l, 1);
 
@@ -78,12 +83,14 @@ static int lua_Mixer_start(lua_State *l)
   }
 	
   lua_dump(l, "mixer:start() => invalid parameters");
+  */
 
 	return 0;
 }
 
 static int lua_Mixer_stop(lua_State *l)
 {
+  /*
   Mixer 
     *mixer = Mixer::Check(l, 1);
 
@@ -92,12 +99,14 @@ static int lua_Mixer_stop(lua_State *l)
   }
 	
   lua_dump(l, "mixer:stop() => invalid parameters");
+  */
 
 	return 0;
 }
 
 static int lua_Mixer_pause(lua_State *l)
 {
+  /*
   Mixer 
     *mixer = Mixer::Check(l, 1);
 
@@ -106,12 +115,14 @@ static int lua_Mixer_pause(lua_State *l)
   }
 	
   lua_dump(l, "mixer:pause() => invalid parameters");
+  */
 
 	return 0;
 }
 
 static int lua_Mixer_loop(lua_State *l)
 {
+  /*
   Mixer 
     *mixer = Mixer::Check(l, 1);
 
@@ -125,12 +136,14 @@ static int lua_Mixer_loop(lua_State *l)
   }
 	
   lua_dump(l, "mixer:loop() => invalid parameters");
+  */
 
 	return 0;
 }
 
 static int lua_Mixer_volume(lua_State *l)
 {
+  /*
   Mixer 
     *mixer = Mixer::Check(l, 1);
 
@@ -144,12 +157,14 @@ static int lua_Mixer_volume(lua_State *l)
   }
 	
   lua_dump(l, "mixer:volume() => invalid parameters");
+  */
 
 	return 0;
 }
 
 Mixer::Mixer(std::string path)
 {
+  /*
   if (MixerInstance() == nullptr) {
     throw std::runtime_error("Audio mixer is not avaiable !");
   }
@@ -164,12 +179,15 @@ Mixer::Mixer(std::string path)
   this->audio = control->CreateAudio(jLua::Instance().base + "/" + path);
 
   this->audio->SetLoopEnabled(false);
+  */
 }
 
 Mixer::~Mixer()
 {
+  /*
 	delete audio;
 	audio = nullptr;
+  */
 }
 
 Mixer * Mixer::Check(lua_State *l, int n)

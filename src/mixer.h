@@ -22,15 +22,15 @@
 
 #include "utils.h"
 
-#include "jmedia/jaudiomixercontrol.h"
+// #include "jmedia/jaudiomixercontrol.h"
 
 #include <chrono>
 
 class Mixer {
 
 	public:
-    jmedia::Audio
-      *audio;
+    // jmedia::Audio
+      // *audio;
 
 	public:
 		Mixer(std::string path);

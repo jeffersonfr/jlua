@@ -20,7 +20,7 @@
 #include "jlua.h"
 #include "canvas.h"
 
-#include "jgui/japplication.h"
+#include "jcanvas/core/japplication.h"
 
 int main(int argc, char **argv)
 {
@@ -30,7 +30,7 @@ int main(int argc, char **argv)
     return 1;
   }
 
-	jgui::Application::Init(0, nullptr);
+	jcanvas::Application::Init(argc, argv);
 
 	jLua &app = jLua::Instance();
 
@@ -44,7 +44,7 @@ int main(int argc, char **argv)
 
 	app.Exec();
 
-	jgui::Application::Loop();
+	jcanvas::Application::Loop();
 
 	return 0;
 }

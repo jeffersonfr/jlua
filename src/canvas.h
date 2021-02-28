@@ -20,20 +20,20 @@
 #ifndef LUA_CANVAS_H
 #define LUA_CANVAS_H
 
-#include "jgui/jimage.h"
+#include "jcanvas/core/jimage.h"
 
 #include "utils.h"
 
 class Canvas {
 
 	public:
-		jgui::Image
+		jcanvas::Image
 			*image;
 		bool
 			visible;
 
 	public:
-		Canvas(jgui::Image *image = nullptr);
+		Canvas(jcanvas::Image *image = nullptr);
 
 		~Canvas();
 

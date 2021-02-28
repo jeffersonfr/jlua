@@ -20,37 +20,37 @@
 #ifndef LUA_JLUA_H
 #define LUA_JLUA_H
 
-#include "jgui/jwindow.h"
+#include "jcanvas/core/jwindow.h"
 
 #include <mutex>
 
 class Canvas;
 
-class jLua : public jgui::Window, jevent::WindowListener {
+class jLua : public jcanvas::Window, public jcanvas::KeyListener, public jcanvas::MouseListener, public jcanvas::WindowListener {
 
 	private:
-    jgui::Graphics
+    jcanvas::Graphics
       *_graphicLayer;
 		std::mutex
 			_lua_mutex;
 
 	private:
-		virtual bool KeyPressed(jevent::KeyEvent *event);
-		virtual bool KeyReleased(jevent::KeyEvent *event);
-		virtual bool MousePressed(jevent::MouseEvent *event);
-		virtual bool MouseReleased(jevent::MouseEvent *event);
-		virtual bool MouseMoved(jevent::MouseEvent *event);
+		virtual bool KeyPressed(jcanvas::KeyEvent *event) override;
+		virtual bool KeyReleased(jcanvas::KeyEvent *event) override;
+		virtual bool MousePressed(jcanvas::MouseEvent *event) override;
+		virtual bool MouseReleased(jcanvas::MouseEvent *event) override;
+		virtual bool MouseMoved(jcanvas::MouseEvent *event) override;
 
-    virtual void WindowOpened(jevent::WindowEvent *event);
-    virtual void WindowClosing(jevent::WindowEvent *event);
-    virtual void WindowClosed(jevent::WindowEvent *event);
-    virtual void WindowResized(jevent::WindowEvent *event);
-    virtual void WindowMoved(jevent::WindowEvent *event);
-    virtual void WindowPainted(jevent::WindowEvent *event);
-    virtual void WindowEntered(jevent::WindowEvent *event);
-    virtual void WindowLeaved(jevent::WindowEvent *event);
+    virtual void WindowOpened(jcanvas::WindowEvent *event) override;
+    virtual void WindowClosing(jcanvas::WindowEvent *event) override;
+    virtual void WindowClosed(jcanvas::WindowEvent *event) override;
+    virtual void WindowResized(jcanvas::WindowEvent *event) override;
+    virtual void WindowMoved(jcanvas::WindowEvent *event) override;
+    virtual void WindowPainted(jcanvas::WindowEvent *event) override;
+    virtual void WindowEntered(jcanvas::WindowEvent *event) override;
+    virtual void WindowLeaved(jcanvas::WindowEvent *event) override;
 
-		virtual void Paint(jgui::Graphics *g);
+		virtual void Paint(jcanvas::Graphics *g) override;
 
   public:
     std::string
@@ -67,7 +67,7 @@ class jLua : public jgui::Window, jevent::WindowListener {
 
     bool Load(std::string path);
 
-		jgui::Graphics * GetGraphicLayer();
+		jcanvas::Graphics * GetGraphicLayer();
 
 };
 

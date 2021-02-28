@@ -25,8 +25,8 @@
 #include "mixer.h"
 #include "utils.h"
 
-#include "jgui/japplication.h"
-#include "jgui/jbufferedimage.h"
+#include "jcanvas/core/japplication.h"
+#include "jcanvas/core/jbufferedimage.h"
 
 #include <filesystem>
 
@@ -40,7 +40,7 @@ static lua_State
 	*l = nullptr;
 
 jLua::jLua():
-	jgui::Window({1280, 720})
+	jcanvas::Window({1280, 720})
 {
 	RegisterWindowListener(this);
 }
@@ -57,169 +57,169 @@ jLua & jLua::Instance()
 	return instance;
 }
 
-static std::string KeySymbolToString(jevent::jkeyevent_symbol_t param) 
+static std::string KeySymbolToString(jcanvas::jkeyevent_symbol_t param) 
 {
-	if (param == jevent::JKS_SPACE) {
+	if (param == jcanvas::JKS_SPACE) {
 		return "space";
-	} else if (param == jevent::JKS_ENTER) {
+	} else if (param == jcanvas::JKS_ENTER) {
 		return "enter";
-	} else if (param == jevent::JKS_1) {
+	} else if (param == jcanvas::JKS_1) {
 		return "1";
-	} else if (param == jevent::JKS_2) {
+	} else if (param == jcanvas::JKS_2) {
 		return "2";
-	} else if (param == jevent::JKS_3) {
+	} else if (param == jcanvas::JKS_3) {
 		return "3";
-	} else if (param == jevent::JKS_4) {
+	} else if (param == jcanvas::JKS_4) {
 		return "4";
-	} else if (param == jevent::JKS_5) {
+	} else if (param == jcanvas::JKS_5) {
 		return "5";
-	} else if (param == jevent::JKS_6) {
+	} else if (param == jcanvas::JKS_6) {
 		return "6";
-	} else if (param == jevent::JKS_7) {
+	} else if (param == jcanvas::JKS_7) {
 		return "7";
-	} else if (param == jevent::JKS_8) {
+	} else if (param == jcanvas::JKS_8) {
 		return "8";
-	} else if (param == jevent::JKS_9) {
+	} else if (param == jcanvas::JKS_9) {
 		return "9";
-	} else if (param == jevent::JKS_0) {
+	} else if (param == jcanvas::JKS_0) {
 		return "0";
-	} else if (param == jevent::JKS_A) {
+	} else if (param == jcanvas::JKS_A) {
 		return "A";
-	} else if (param == jevent::JKS_B) {
+	} else if (param == jcanvas::JKS_B) {
 		return "B";
-	} else if (param == jevent::JKS_C) {
+	} else if (param == jcanvas::JKS_C) {
 		return "C";
-	} else if (param == jevent::JKS_D) {
+	} else if (param == jcanvas::JKS_D) {
 		return "D";
-	} else if (param == jevent::JKS_E) {
+	} else if (param == jcanvas::JKS_E) {
 		return "E";
-	} else if (param == jevent::JKS_F) {
+	} else if (param == jcanvas::JKS_F) {
 		return "F";
-	} else if (param == jevent::JKS_G) {
+	} else if (param == jcanvas::JKS_G) {
 		return "G";
-	} else if (param == jevent::JKS_H) {
+	} else if (param == jcanvas::JKS_H) {
 		return "H";
-	} else if (param == jevent::JKS_I) {
+	} else if (param == jcanvas::JKS_I) {
 		return "I";
-	} else if (param == jevent::JKS_J) {
+	} else if (param == jcanvas::JKS_J) {
 		return "J";
-	} else if (param == jevent::JKS_K) {
+	} else if (param == jcanvas::JKS_K) {
 		return "K";
-	} else if (param == jevent::JKS_L) {
+	} else if (param == jcanvas::JKS_L) {
 		return "L";
-	} else if (param == jevent::JKS_M) {
+	} else if (param == jcanvas::JKS_M) {
 		return "M";
-	} else if (param == jevent::JKS_N) {
+	} else if (param == jcanvas::JKS_N) {
 		return "N";
-	} else if (param == jevent::JKS_O) {
+	} else if (param == jcanvas::JKS_O) {
 		return "O";
-	} else if (param == jevent::JKS_P) {
+	} else if (param == jcanvas::JKS_P) {
 		return "P";
-	} else if (param == jevent::JKS_Q) {
+	} else if (param == jcanvas::JKS_Q) {
 		return "Q";
-	} else if (param == jevent::JKS_R) {
+	} else if (param == jcanvas::JKS_R) {
 		return "R";
-	} else if (param == jevent::JKS_S) {
+	} else if (param == jcanvas::JKS_S) {
 		return "S";
-	} else if (param == jevent::JKS_T) {
+	} else if (param == jcanvas::JKS_T) {
 		return "T";
-	} else if (param == jevent::JKS_U) {
+	} else if (param == jcanvas::JKS_U) {
 		return "U";
-	} else if (param == jevent::JKS_V) {
+	} else if (param == jcanvas::JKS_V) {
 		return "V";
-	} else if (param == jevent::JKS_W) {
+	} else if (param == jcanvas::JKS_W) {
 		return "W";
-	} else if (param == jevent::JKS_X) {
+	} else if (param == jcanvas::JKS_X) {
 		return "X";
-	} else if (param == jevent::JKS_Y) {
+	} else if (param == jcanvas::JKS_Y) {
 		return "Y";
-	} else if (param == jevent::JKS_Z) {
+	} else if (param == jcanvas::JKS_Z) {
 		return "Z";
-	} else if (param == jevent::JKS_a) {
+	} else if (param == jcanvas::JKS_a) {
 		return "a";
-	} else if (param == jevent::JKS_b) {
+	} else if (param == jcanvas::JKS_b) {
 		return "b";
-	} else if (param == jevent::JKS_c) {
+	} else if (param == jcanvas::JKS_c) {
 		return "c";
-	} else if (param == jevent::JKS_d) {
+	} else if (param == jcanvas::JKS_d) {
 		return "d";
-	} else if (param == jevent::JKS_e) {
+	} else if (param == jcanvas::JKS_e) {
 		return "e";
-	} else if (param == jevent::JKS_f) {
+	} else if (param == jcanvas::JKS_f) {
 		return "f";
-	} else if (param == jevent::JKS_g) {
+	} else if (param == jcanvas::JKS_g) {
 		return "g";
-	} else if (param == jevent::JKS_h) {
+	} else if (param == jcanvas::JKS_h) {
 		return "h";
-	} else if (param == jevent::JKS_i) {
+	} else if (param == jcanvas::JKS_i) {
 		return "i";
-	} else if (param == jevent::JKS_j) {
+	} else if (param == jcanvas::JKS_j) {
 		return "j";
-	} else if (param == jevent::JKS_k) {
+	} else if (param == jcanvas::JKS_k) {
 		return "k";
-	} else if (param == jevent::JKS_l) {
+	} else if (param == jcanvas::JKS_l) {
 		return "l";
-	} else if (param == jevent::JKS_m) {
+	} else if (param == jcanvas::JKS_m) {
 		return "m";
-	} else if (param == jevent::JKS_n) {
+	} else if (param == jcanvas::JKS_n) {
 		return "n";
-	} else if (param == jevent::JKS_o) {
+	} else if (param == jcanvas::JKS_o) {
 		return "o";
-	} else if (param == jevent::JKS_p) {
+	} else if (param == jcanvas::JKS_p) {
 		return "p";
-	} else if (param == jevent::JKS_q) {
+	} else if (param == jcanvas::JKS_q) {
 		return "q";
-	} else if (param == jevent::JKS_r) {
+	} else if (param == jcanvas::JKS_r) {
 		return "r";
-	} else if (param == jevent::JKS_s) {
+	} else if (param == jcanvas::JKS_s) {
 		return "s";
-	} else if (param == jevent::JKS_t) {
+	} else if (param == jcanvas::JKS_t) {
 		return "t";
-	} else if (param == jevent::JKS_u) {
+	} else if (param == jcanvas::JKS_u) {
 		return "u";
-	} else if (param == jevent::JKS_v) {
+	} else if (param == jcanvas::JKS_v) {
 		return "v";
-	} else if (param == jevent::JKS_w) {
+	} else if (param == jcanvas::JKS_w) {
 		return "w";
-	} else if (param == jevent::JKS_x) {
+	} else if (param == jcanvas::JKS_x) {
 		return "x";
-	} else if (param == jevent::JKS_y) {
+	} else if (param == jcanvas::JKS_y) {
 		return "y";
-	} else if (param == jevent::JKS_z) {
+	} else if (param == jcanvas::JKS_z) {
 		return "z";
-	} else if (param == jevent::JKS_CURSOR_LEFT) {
+	} else if (param == jcanvas::JKS_CURSOR_LEFT) {
 		return "left";
-	} else if (param == jevent::JKS_CURSOR_RIGHT) {
+	} else if (param == jcanvas::JKS_CURSOR_RIGHT) {
 		return "right";
-	} else if (param == jevent::JKS_CURSOR_UP) {
+	} else if (param == jcanvas::JKS_CURSOR_UP) {
 		return "up";
-	} else if (param == jevent::JKS_CURSOR_DOWN) {
+	} else if (param == jcanvas::JKS_CURSOR_DOWN) {
 		return "down";
-	} else if (param == jevent::JKS_SHIFT) {
+	} else if (param == jcanvas::JKS_SHIFT) {
 		return "shift";
-	} else if (param == jevent::JKS_ALT) {
+	} else if (param == jcanvas::JKS_ALT) {
 		return "alt";
-	} else if (param == jevent::JKS_CONTROL) {
+	} else if (param == jcanvas::JKS_CONTROL) {
 		return "ctrl";
   }
 
 	return "unknown";
 }
 
-static std::string MouseButtonToString(jevent::jmouseevent_button_t param) 
+static std::string MouseButtonToString(jcanvas::jmouseevent_button_t param) 
 {
-	if (param == jevent::JMB_BUTTON1) {
+	if (param == jcanvas::JMB_BUTTON1) {
 		return "0";
-	} else if (param == jevent::JMB_BUTTON2) {
+	} else if (param == jcanvas::JMB_BUTTON2) {
 		return "1";
-	} else if (param == jevent::JMB_BUTTON3) {
+	} else if (param == jcanvas::JMB_BUTTON3) {
 		return "2";
 	}
 
 	return "unknown";
 }
 
-bool jLua::KeyPressed(jevent::KeyEvent *event)
+bool jLua::KeyPressed(jcanvas::KeyEvent *event)
 {
 	Event::keys[KeySymbolToString(event->GetSymbol())] = {
 		"pressed", std::chrono::steady_clock::now()
@@ -228,7 +228,7 @@ bool jLua::KeyPressed(jevent::KeyEvent *event)
 	return true;
 }
 
-bool jLua::KeyReleased(jevent::KeyEvent *event)
+bool jLua::KeyReleased(jcanvas::KeyEvent *event)
 {
 	Event::keys[KeySymbolToString(event->GetSymbol())] = {
 		"released", std::chrono::steady_clock::now()
@@ -237,7 +237,7 @@ bool jLua::KeyReleased(jevent::KeyEvent *event)
 	return true;
 }
 
-bool jLua::MousePressed(jevent::MouseEvent *event)
+bool jLua::MousePressed(jcanvas::MouseEvent *event)
 {
 	Event::pointers[MouseButtonToString(event->GetButton())] = {
 		"pressed", std::chrono::steady_clock::now(), event->GetLocation(), event->GetClicks()
@@ -246,7 +246,7 @@ bool jLua::MousePressed(jevent::MouseEvent *event)
 	return true;
 }
 
-bool jLua::MouseReleased(jevent::MouseEvent *event)
+bool jLua::MouseReleased(jcanvas::MouseEvent *event)
 {
 	Event::pointers[MouseButtonToString(event->GetButton())] = {
 		"released", std::chrono::steady_clock::now(), event->GetLocation(), event->GetClicks()
@@ -255,36 +255,36 @@ bool jLua::MouseReleased(jevent::MouseEvent *event)
 	return true;
 }
 
-bool jLua::MouseMoved(jevent::MouseEvent *event)
+bool jLua::MouseMoved(jcanvas::MouseEvent *event)
 {
-	Event::pointers[MouseButtonToString(jevent::JMB_BUTTON1)] = {
+	Event::pointers[MouseButtonToString(jcanvas::JMB_BUTTON1)] = {
 		"moved", std::chrono::steady_clock::now(), event->GetLocation(), event->GetClicks()
 	};
 
-	Event::pointers[MouseButtonToString(jevent::JMB_BUTTON2)] = {
+	Event::pointers[MouseButtonToString(jcanvas::JMB_BUTTON2)] = {
 		"moved", std::chrono::steady_clock::now(), event->GetLocation(), event->GetClicks()
 	};
 
-	Event::pointers[MouseButtonToString(jevent::JMB_BUTTON3)] = {
+	Event::pointers[MouseButtonToString(jcanvas::JMB_BUTTON3)] = {
 		"moved", std::chrono::steady_clock::now(), event->GetLocation(), event->GetClicks()
 	};
 
 	return true;
 }
 
-void jLua::WindowOpened(jevent::WindowEvent *event)
+void jLua::WindowOpened(jcanvas::WindowEvent *event)
 {
 }
 
-void jLua::WindowClosing(jevent::WindowEvent *event)
+void jLua::WindowClosing(jcanvas::WindowEvent *event)
 {
 }
 
-void jLua::WindowClosed(jevent::WindowEvent *event)
+void jLua::WindowClosed(jcanvas::WindowEvent *event)
 {
 }
 
-void jLua::WindowResized(jevent::WindowEvent *event)
+void jLua::WindowResized(jcanvas::WindowEvent *event)
 {
   // INFO:: call configure method in lua
   if (lua_getglobal(l, "configure") != LUA_TNIL) {
@@ -296,25 +296,25 @@ void jLua::WindowResized(jevent::WindowEvent *event)
   }
 }
 
-void jLua::WindowMoved(jevent::WindowEvent *event)
+void jLua::WindowMoved(jcanvas::WindowEvent *event)
 {
 }
 
-void jLua::WindowPainted(jevent::WindowEvent *event)
+void jLua::WindowPainted(jcanvas::WindowEvent *event)
 {
 }
 
-void jLua::WindowEntered(jevent::WindowEvent *event)
+void jLua::WindowEntered(jcanvas::WindowEvent *event)
 {
 }
 
-void jLua::WindowLeaved(jevent::WindowEvent *event)
+void jLua::WindowLeaved(jcanvas::WindowEvent *event)
 {
 }
 
-void jLua::Paint(jgui::Graphics *g)
+void jLua::Paint(jcanvas::Graphics *g)
 {
-  jgui::Window::Paint(g);
+  jcanvas::Window::Paint(g);
 
 	_lua_mutex.lock();
 
@@ -343,7 +343,7 @@ void jLua::Paint(jgui::Graphics *g)
 	
 	_lua_mutex.unlock();
 
-  g->SetCompositeFlags(jgui::JCF_SRC_OVER);
+  g->SetCompositeFlags(jcanvas::JCF_SRC_OVER);
 
   Repaint();
 }
@@ -425,7 +425,7 @@ bool jLua::Load(std::string path)
   return true;
 }
 
-jgui::Graphics * jLua::GetGraphicLayer()
+jcanvas::Graphics * jLua::GetGraphicLayer()
 {
 	return _graphicLayer;
 }

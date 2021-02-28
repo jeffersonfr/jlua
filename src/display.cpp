@@ -25,12 +25,12 @@ static const std::string
 
 static int lua_Display_size(lua_State *l)
 {
-  jgui::jsize_t<int>
+  jcanvas::jpoint_t<int>
     size = jLua::Instance().GetSize();
 		
 	if (lua_gettop(l) == 0) {
-		lua_pushinteger(l, size.width);
-		lua_pushinteger(l, size.height);
+		lua_pushinteger(l, size.x);
+		lua_pushinteger(l, size.y);
 
 		return 2;
 	} else if (lua_gettop(l) == 2) {
