@@ -98,7 +98,7 @@ static int lua_Font_extends(lua_State *l)
 
 Font::Font(int size)
 {
-	font = new jcanvas::Font("default", (jcanvas::jfont_attributes_t)(jcanvas::JFA_NORMAL), size);
+	font = new jcanvas::Font("default", (jcanvas::jfont_attributes_t)(jcanvas::jfont_attributes_t::None), size);
 }
 
 Font::~Font()

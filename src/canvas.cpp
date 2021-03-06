@@ -46,7 +46,7 @@ int lua_Canvas_new(lua_State *l)
     Canvas
       **udata = (Canvas **)lua_newuserdata(l, sizeof(Canvas *));
 
-    *udata = new Canvas(new jcanvas::BufferedImage(jcanvas::JPF_ARGB, {w, h}));
+    *udata = new Canvas(new jcanvas::BufferedImage(jcanvas::jpixelformat_t::ARGB, {w, h}));
 		
 		(*udata)->image->GetGraphics()->SetFont(&jcanvas::Font::Normal);
   }
@@ -398,9 +398,9 @@ static int lua_Canvas_pixels(lua_State *l)
     uint32_t
       color = (uint32_t)luaL_checknumber(l, 4);
 
-    g->SetCompositeFlags(jcanvas::JCF_SRC);
+    g->SetCompositeFlags(jcanvas::jcomposite_t::Src);
     g->SetRGB(color, {x, y});
-    g->SetCompositeFlags(jcanvas::JCF_SRC_OVER);
+    g->SetCompositeFlags(jcanvas::jcomposite_t::SrcOver);
 
 		return 0;
   } else if (lua_gettop(l) == 5) { // INFO:: canvas:pixels(x, y, w, h)
@@ -469,9 +469,9 @@ static int lua_Canvas_pixels(lua_State *l)
       
     lua_pop(l, 1);
 
-    g->SetCompositeFlags(jcanvas::JCF_SRC);
+    g->SetCompositeFlags(jcanvas::jcomposite_t::Src);
     g->SetRGBArray(buffer, {x, y, w, h});
-    g->SetCompositeFlags(jcanvas::JCF_SRC_OVER);
+    g->SetCompositeFlags(jcanvas::jcomposite_t::SrcOver);
 
     return 0;
   } else if (lua_gettop(l) == 7) { // INFO:: canvas:pixels(x, y, r, g, b, a)
@@ -573,28 +573,28 @@ static int lua_Canvas_text(lua_State *l)
       ha = luaL_checkstring(l, 7),
       va = luaL_checkstring(l, 8);
     jcanvas::jhorizontal_align_t 
-      halign = jcanvas::JHA_LEFT;
+      halign = jcanvas::jhorizontal_align_t::Left;
     jcanvas::jvertical_align_t 
-      valign = jcanvas::JVA_TOP;
+      valign = jcanvas::jvertical_align_t::Top;
 
     if (ha == "left") {
-      halign = jcanvas::JHA_LEFT;
+      halign = jcanvas::jhorizontal_align_t::Left;
     } else if (ha == "center") {
-      halign = jcanvas::JHA_CENTER;
+      halign = jcanvas::jhorizontal_align_t::Center;
     } else if (ha == "right") {
-      halign = jcanvas::JHA_RIGHT;
+      halign = jcanvas::jhorizontal_align_t::Right;
     } else if (ha == "justified") {
-      halign = jcanvas::JHA_JUSTIFY;
+      halign = jcanvas::jhorizontal_align_t::Justify;
     }
 
     if (va == "top") {
-      valign = jcanvas::JVA_TOP;
+      valign = jcanvas::jvertical_align_t::Top;
     } else if (va == "center") {
-      valign = jcanvas::JVA_CENTER;
+      valign = jcanvas::jvertical_align_t::Center;
     } else if (va == "bottom") {
-      valign = jcanvas::JVA_BOTTOM;
+      valign = jcanvas::jvertical_align_t::Bottom;
     } else if (va == "justified") {
-      valign = jcanvas::JVA_JUSTIFY;
+      valign = jcanvas::jvertical_align_t::Justify;
     }
 
 		g->DrawString(text, jcanvas::jrect_t<int>{x, y, w, h}, halign, valign);
@@ -646,7 +646,7 @@ static int lua_Canvas_scale(lua_State *l)
     Canvas
       **udata = (Canvas **)lua_newuserdata(l, sizeof(Canvas *));
 
-    canvas->image->GetGraphics()->SetAntialias(jcanvas::JAM_NONE);
+    canvas->image->GetGraphics()->SetAntialias(jcanvas::jantialias_mode_t::None);
 
     *udata = new Canvas(canvas->image->Scale({w, h}));
 
@@ -754,7 +754,7 @@ static int lua_Canvas_compose(lua_State *l)
     return 0;
   }
 
-  g->SetBlittingFlags(jcanvas::JBF_NEAREST);
+  g->SetBlittingFlags(jcanvas::jblitting_t::Nearest);
 
   if (lua_gettop(l) == 4 - offset) { // INFO:: canvas:compose(src, dx, dy)
     Canvas 

@@ -59,147 +59,147 @@ jLua & jLua::Instance()
 
 static std::string KeySymbolToString(jcanvas::jkeyevent_symbol_t param) 
 {
-	if (param == jcanvas::JKS_SPACE) {
+	if (param == jcanvas::jkeyevent_symbol_t::Space) {
 		return "space";
-	} else if (param == jcanvas::JKS_ENTER) {
+	} else if (param == jcanvas::jkeyevent_symbol_t::Enter) {
 		return "enter";
-	} else if (param == jcanvas::JKS_1) {
+	} else if (param == jcanvas::jkeyevent_symbol_t::Number1) {
 		return "1";
-	} else if (param == jcanvas::JKS_2) {
+	} else if (param == jcanvas::jkeyevent_symbol_t::Number2) {
 		return "2";
-	} else if (param == jcanvas::JKS_3) {
+	} else if (param == jcanvas::jkeyevent_symbol_t::Number3) {
 		return "3";
-	} else if (param == jcanvas::JKS_4) {
+	} else if (param == jcanvas::jkeyevent_symbol_t::Number4) {
 		return "4";
-	} else if (param == jcanvas::JKS_5) {
+	} else if (param == jcanvas::jkeyevent_symbol_t::Number5) {
 		return "5";
-	} else if (param == jcanvas::JKS_6) {
+	} else if (param == jcanvas::jkeyevent_symbol_t::Number6) {
 		return "6";
-	} else if (param == jcanvas::JKS_7) {
+	} else if (param == jcanvas::jkeyevent_symbol_t::Number7) {
 		return "7";
-	} else if (param == jcanvas::JKS_8) {
+	} else if (param == jcanvas::jkeyevent_symbol_t::Number8) {
 		return "8";
-	} else if (param == jcanvas::JKS_9) {
+	} else if (param == jcanvas::jkeyevent_symbol_t::Number9) {
 		return "9";
-	} else if (param == jcanvas::JKS_0) {
+	} else if (param == jcanvas::jkeyevent_symbol_t::Number0) {
 		return "0";
-	} else if (param == jcanvas::JKS_A) {
+	} else if (param == jcanvas::jkeyevent_symbol_t::A) {
 		return "A";
-	} else if (param == jcanvas::JKS_B) {
+	} else if (param == jcanvas::jkeyevent_symbol_t::B) {
 		return "B";
-	} else if (param == jcanvas::JKS_C) {
+	} else if (param == jcanvas::jkeyevent_symbol_t::C) {
 		return "C";
-	} else if (param == jcanvas::JKS_D) {
+	} else if (param == jcanvas::jkeyevent_symbol_t::D) {
 		return "D";
-	} else if (param == jcanvas::JKS_E) {
+	} else if (param == jcanvas::jkeyevent_symbol_t::E) {
 		return "E";
-	} else if (param == jcanvas::JKS_F) {
+	} else if (param == jcanvas::jkeyevent_symbol_t::F) {
 		return "F";
-	} else if (param == jcanvas::JKS_G) {
+	} else if (param == jcanvas::jkeyevent_symbol_t::G) {
 		return "G";
-	} else if (param == jcanvas::JKS_H) {
+	} else if (param == jcanvas::jkeyevent_symbol_t::H) {
 		return "H";
-	} else if (param == jcanvas::JKS_I) {
+	} else if (param == jcanvas::jkeyevent_symbol_t::I) {
 		return "I";
-	} else if (param == jcanvas::JKS_J) {
+	} else if (param == jcanvas::jkeyevent_symbol_t::J) {
 		return "J";
-	} else if (param == jcanvas::JKS_K) {
+	} else if (param == jcanvas::jkeyevent_symbol_t::K) {
 		return "K";
-	} else if (param == jcanvas::JKS_L) {
+	} else if (param == jcanvas::jkeyevent_symbol_t::L) {
 		return "L";
-	} else if (param == jcanvas::JKS_M) {
+	} else if (param == jcanvas::jkeyevent_symbol_t::M) {
 		return "M";
-	} else if (param == jcanvas::JKS_N) {
+	} else if (param == jcanvas::jkeyevent_symbol_t::N) {
 		return "N";
-	} else if (param == jcanvas::JKS_O) {
+	} else if (param == jcanvas::jkeyevent_symbol_t::O) {
 		return "O";
-	} else if (param == jcanvas::JKS_P) {
+	} else if (param == jcanvas::jkeyevent_symbol_t::P) {
 		return "P";
-	} else if (param == jcanvas::JKS_Q) {
+	} else if (param == jcanvas::jkeyevent_symbol_t::Q) {
 		return "Q";
-	} else if (param == jcanvas::JKS_R) {
+	} else if (param == jcanvas::jkeyevent_symbol_t::R) {
 		return "R";
-	} else if (param == jcanvas::JKS_S) {
+	} else if (param == jcanvas::jkeyevent_symbol_t::S) {
 		return "S";
-	} else if (param == jcanvas::JKS_T) {
+	} else if (param == jcanvas::jkeyevent_symbol_t::T) {
 		return "T";
-	} else if (param == jcanvas::JKS_U) {
+	} else if (param == jcanvas::jkeyevent_symbol_t::U) {
 		return "U";
-	} else if (param == jcanvas::JKS_V) {
+	} else if (param == jcanvas::jkeyevent_symbol_t::V) {
 		return "V";
-	} else if (param == jcanvas::JKS_W) {
+	} else if (param == jcanvas::jkeyevent_symbol_t::W) {
 		return "W";
-	} else if (param == jcanvas::JKS_X) {
+	} else if (param == jcanvas::jkeyevent_symbol_t::X) {
 		return "X";
-	} else if (param == jcanvas::JKS_Y) {
+	} else if (param == jcanvas::jkeyevent_symbol_t::Y) {
 		return "Y";
-	} else if (param == jcanvas::JKS_Z) {
+	} else if (param == jcanvas::jkeyevent_symbol_t::Z) {
 		return "Z";
-	} else if (param == jcanvas::JKS_a) {
+	} else if (param == jcanvas::jkeyevent_symbol_t::a) {
 		return "a";
-	} else if (param == jcanvas::JKS_b) {
+	} else if (param == jcanvas::jkeyevent_symbol_t::b) {
 		return "b";
-	} else if (param == jcanvas::JKS_c) {
+	} else if (param == jcanvas::jkeyevent_symbol_t::c) {
 		return "c";
-	} else if (param == jcanvas::JKS_d) {
+	} else if (param == jcanvas::jkeyevent_symbol_t::d) {
 		return "d";
-	} else if (param == jcanvas::JKS_e) {
+	} else if (param == jcanvas::jkeyevent_symbol_t::e) {
 		return "e";
-	} else if (param == jcanvas::JKS_f) {
+	} else if (param == jcanvas::jkeyevent_symbol_t::f) {
 		return "f";
-	} else if (param == jcanvas::JKS_g) {
+	} else if (param == jcanvas::jkeyevent_symbol_t::g) {
 		return "g";
-	} else if (param == jcanvas::JKS_h) {
+	} else if (param == jcanvas::jkeyevent_symbol_t::h) {
 		return "h";
-	} else if (param == jcanvas::JKS_i) {
+	} else if (param == jcanvas::jkeyevent_symbol_t::i) {
 		return "i";
-	} else if (param == jcanvas::JKS_j) {
+	} else if (param == jcanvas::jkeyevent_symbol_t::j) {
 		return "j";
-	} else if (param == jcanvas::JKS_k) {
+	} else if (param == jcanvas::jkeyevent_symbol_t::k) {
 		return "k";
-	} else if (param == jcanvas::JKS_l) {
+	} else if (param == jcanvas::jkeyevent_symbol_t::l) {
 		return "l";
-	} else if (param == jcanvas::JKS_m) {
+	} else if (param == jcanvas::jkeyevent_symbol_t::m) {
 		return "m";
-	} else if (param == jcanvas::JKS_n) {
+	} else if (param == jcanvas::jkeyevent_symbol_t::n) {
 		return "n";
-	} else if (param == jcanvas::JKS_o) {
+	} else if (param == jcanvas::jkeyevent_symbol_t::o) {
 		return "o";
-	} else if (param == jcanvas::JKS_p) {
+	} else if (param == jcanvas::jkeyevent_symbol_t::p) {
 		return "p";
-	} else if (param == jcanvas::JKS_q) {
+	} else if (param == jcanvas::jkeyevent_symbol_t::q) {
 		return "q";
-	} else if (param == jcanvas::JKS_r) {
+	} else if (param == jcanvas::jkeyevent_symbol_t::r) {
 		return "r";
-	} else if (param == jcanvas::JKS_s) {
+	} else if (param == jcanvas::jkeyevent_symbol_t::s) {
 		return "s";
-	} else if (param == jcanvas::JKS_t) {
+	} else if (param == jcanvas::jkeyevent_symbol_t::t) {
 		return "t";
-	} else if (param == jcanvas::JKS_u) {
+	} else if (param == jcanvas::jkeyevent_symbol_t::u) {
 		return "u";
-	} else if (param == jcanvas::JKS_v) {
+	} else if (param == jcanvas::jkeyevent_symbol_t::v) {
 		return "v";
-	} else if (param == jcanvas::JKS_w) {
+	} else if (param == jcanvas::jkeyevent_symbol_t::w) {
 		return "w";
-	} else if (param == jcanvas::JKS_x) {
+	} else if (param == jcanvas::jkeyevent_symbol_t::x) {
 		return "x";
-	} else if (param == jcanvas::JKS_y) {
+	} else if (param == jcanvas::jkeyevent_symbol_t::y) {
 		return "y";
-	} else if (param == jcanvas::JKS_z) {
+	} else if (param == jcanvas::jkeyevent_symbol_t::z) {
 		return "z";
-	} else if (param == jcanvas::JKS_CURSOR_LEFT) {
+	} else if (param == jcanvas::jkeyevent_symbol_t::CursorLeft) {
 		return "left";
-	} else if (param == jcanvas::JKS_CURSOR_RIGHT) {
+	} else if (param == jcanvas::jkeyevent_symbol_t::CursorRight) {
 		return "right";
-	} else if (param == jcanvas::JKS_CURSOR_UP) {
+	} else if (param == jcanvas::jkeyevent_symbol_t::CursorUp) {
 		return "up";
-	} else if (param == jcanvas::JKS_CURSOR_DOWN) {
+	} else if (param == jcanvas::jkeyevent_symbol_t::CursorDown) {
 		return "down";
-	} else if (param == jcanvas::JKS_SHIFT) {
+	} else if (param == jcanvas::jkeyevent_symbol_t::Shift) {
 		return "shift";
-	} else if (param == jcanvas::JKS_ALT) {
+	} else if (param == jcanvas::jkeyevent_symbol_t::Alt) {
 		return "alt";
-	} else if (param == jcanvas::JKS_CONTROL) {
+	} else if (param == jcanvas::jkeyevent_symbol_t::Control) {
 		return "ctrl";
   }
 
@@ -208,11 +208,11 @@ static std::string KeySymbolToString(jcanvas::jkeyevent_symbol_t param)
 
 static std::string MouseButtonToString(jcanvas::jmouseevent_button_t param) 
 {
-	if (param == jcanvas::JMB_BUTTON1) {
+	if (param == jcanvas::jmouseevent_button_t::Button1) {
 		return "0";
-	} else if (param == jcanvas::JMB_BUTTON2) {
+	} else if (param == jcanvas::jmouseevent_button_t::Button2) {
 		return "1";
-	} else if (param == jcanvas::JMB_BUTTON3) {
+	} else if (param == jcanvas::jmouseevent_button_t::Button3) {
 		return "2";
 	}
 
@@ -257,15 +257,15 @@ bool jLua::MouseReleased(jcanvas::MouseEvent *event)
 
 bool jLua::MouseMoved(jcanvas::MouseEvent *event)
 {
-	Event::pointers[MouseButtonToString(jcanvas::JMB_BUTTON1)] = {
+	Event::pointers[MouseButtonToString(jcanvas::jmouseevent_button_t::Button1)] = {
 		"moved", std::chrono::steady_clock::now(), event->GetLocation(), event->GetClicks()
 	};
 
-	Event::pointers[MouseButtonToString(jcanvas::JMB_BUTTON2)] = {
+	Event::pointers[MouseButtonToString(jcanvas::jmouseevent_button_t::Button2)] = {
 		"moved", std::chrono::steady_clock::now(), event->GetLocation(), event->GetClicks()
 	};
 
-	Event::pointers[MouseButtonToString(jcanvas::JMB_BUTTON3)] = {
+	Event::pointers[MouseButtonToString(jcanvas::jmouseevent_button_t::Button3)] = {
 		"moved", std::chrono::steady_clock::now(), event->GetLocation(), event->GetClicks()
 	};
 
@@ -343,7 +343,7 @@ void jLua::Paint(jcanvas::Graphics *g)
 	
 	_lua_mutex.unlock();
 
-  g->SetCompositeFlags(jcanvas::JCF_SRC_OVER);
+  g->SetCompositeFlags(jcanvas::jcomposite_t::SrcOver);
 
   Repaint();
 }
