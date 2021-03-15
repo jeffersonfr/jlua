@@ -29,8 +29,8 @@
 class Font {
 
 	public:
-		jcanvas::Font
-			*font;
+    std::shared_ptr<jcanvas::Font>
+			font;
 
 	public:
 		Font(int size);

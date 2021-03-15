@@ -27,13 +27,13 @@
 class Canvas {
 
 	public:
-		jcanvas::Image
-			*image;
+    std::shared_ptr<jcanvas::Image>
+			image;
 		bool
 			visible;
 
 	public:
-		Canvas(jcanvas::Image *image = nullptr);
+		Canvas(std::shared_ptr<jcanvas::Image> image);
 
 		~Canvas();
 

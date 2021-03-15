@@ -35,9 +35,9 @@ int lua_Canvas_new(lua_State *l)
     Canvas
       **udata = (Canvas **)lua_newuserdata(l, sizeof(Canvas *));
 
-    *udata = new Canvas(new jcanvas::BufferedImage(jLua::Instance().base + "/" + path));
+    *udata = new Canvas(std::make_shared<jcanvas::BufferedImage>(jLua::Instance().base + "/" + path));
 	
-		(*udata)->image->GetGraphics()->SetFont(&jcanvas::Font::Normal);
+		(*udata)->image->GetGraphics()->SetFont(jcanvas::Font::Normal);
   } else if (lua_gettop(l) == 2) { // INFO:(w, h): create a image buffer to be used during the execution
     const int
       w = luaL_checknumber(l, 1),
@@ -46,9 +46,9 @@ int lua_Canvas_new(lua_State *l)
     Canvas
       **udata = (Canvas **)lua_newuserdata(l, sizeof(Canvas *));
 
-    *udata = new Canvas(new jcanvas::BufferedImage(jcanvas::jpixelformat_t::ARGB, {w, h}));
+    *udata = new Canvas(std::make_shared<jcanvas::BufferedImage>(jcanvas::jpixelformat_t::ARGB, jcanvas::jpoint_t<int>{w, h}));
 		
-		(*udata)->image->GetGraphics()->SetFont(&jcanvas::Font::Normal);
+		(*udata)->image->GetGraphics()->SetFont(jcanvas::Font::Normal);
   }
 
 	luaL_getmetatable(l, METATABLE.c_str());
@@ -815,7 +815,7 @@ static int lua_Canvas_compose(lua_State *l)
 	return 0;
 }
 
-Canvas::Canvas(jcanvas::Image *image):
+Canvas::Canvas(std::shared_ptr<jcanvas::Image> image):
   image(image)
 {
   if (image == nullptr) {
@@ -827,7 +827,6 @@ Canvas::Canvas(jcanvas::Image *image):
 
 Canvas::~Canvas()
 {
-	delete image;
   image = nullptr;
 }
 
