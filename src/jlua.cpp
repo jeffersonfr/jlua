@@ -343,7 +343,7 @@ void jLua::Paint(jcanvas::Graphics *g)
 	
 	_lua_mutex.unlock();
 
-  g->SetCompositeFlags(jcanvas::jcomposite_t::SrcOver);
+  g->SetCompositeFlags(jcanvas::jcomposite_flags_t::SrcOver);
 
   Repaint();
 }

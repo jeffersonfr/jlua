@@ -398,9 +398,9 @@ static int lua_Canvas_pixels(lua_State *l)
     uint32_t
       color = (uint32_t)luaL_checknumber(l, 4);
 
-    g->SetCompositeFlags(jcanvas::jcomposite_t::Src);
+    g->SetCompositeFlags(jcanvas::jcomposite_flags_t::Src);
     g->SetRGB(color, {x, y});
-    g->SetCompositeFlags(jcanvas::jcomposite_t::SrcOver);
+    g->SetCompositeFlags(jcanvas::jcomposite_flags_t::SrcOver);
 
 		return 0;
   } else if (lua_gettop(l) == 5) { // INFO:: canvas:pixels(x, y, w, h)
@@ -469,9 +469,9 @@ static int lua_Canvas_pixels(lua_State *l)
       
     lua_pop(l, 1);
 
-    g->SetCompositeFlags(jcanvas::jcomposite_t::Src);
+    g->SetCompositeFlags(jcanvas::jcomposite_flags_t::Src);
     g->SetRGBArray(buffer, {x, y, w, h});
-    g->SetCompositeFlags(jcanvas::jcomposite_t::SrcOver);
+    g->SetCompositeFlags(jcanvas::jcomposite_flags_t::SrcOver);
 
     return 0;
   } else if (lua_gettop(l) == 7) { // INFO:: canvas:pixels(x, y, r, g, b, a)
@@ -646,7 +646,7 @@ static int lua_Canvas_scale(lua_State *l)
     Canvas
       **udata = (Canvas **)lua_newuserdata(l, sizeof(Canvas *));
 
-    canvas->image->GetGraphics()->SetAntialias(jcanvas::jantialias_mode_t::None);
+    canvas->image->GetGraphics()->SetAntialias(jcanvas::jantialias_t::None);
 
     *udata = new Canvas(canvas->image->Scale({w, h}));
 
@@ -754,7 +754,7 @@ static int lua_Canvas_compose(lua_State *l)
     return 0;
   }
 
-  g->SetBlittingFlags(jcanvas::jblitting_t::Nearest);
+  g->SetBlittingFlags(jcanvas::jblitting_flags_t::Nearest);
 
   if (lua_gettop(l) == 4 - offset) { // INFO:: canvas:compose(src, dx, dy)
     Canvas 
