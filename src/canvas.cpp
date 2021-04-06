@@ -621,7 +621,7 @@ static int lua_Canvas_pen(lua_State *l)
     jcanvas::jpen_t 
       pen = g->GetPen();
 
-    pen.width = size;
+    pen.size = size;
 
     g->SetPen(pen);
 
