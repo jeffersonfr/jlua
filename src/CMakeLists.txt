@@ -11,12 +11,8 @@ add_executable(jlua
     main.cpp
   )
 
-include_directories(
-  ${JCANVAS_INCLUDE_DIRS}
-  ${LUA5.3_INCLUDE_DIRS}
-)
-
 target_link_libraries(jlua
-  ${JCANVAS_LIBRARIES}
-  ${LUA5.3_LIBRARIES}
+  PRIVATE
+    PkgConfig::jCanvas
+    PkgConfig::Lua5.3
   )

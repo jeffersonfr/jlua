@@ -6,7 +6,7 @@ set (CMAKE_CXX_STANDARD 20)
 
 find_package (PkgConfig REQUIRED)
 
-pkg_check_modules (JCANVAS REQUIRED jcanvas)
-pkg_check_modules (LUA5.3 REQUIRED lua5.3)
+pkg_check_modules (jCanvas REQUIRED IMPORTED_TARGET jcanvas)
+pkg_check_modules (Lua5.3 REQUIRED IMPORTED_TARGET lua5.3)
 
 add_subdirectory (src)
