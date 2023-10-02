@@ -32,7 +32,7 @@ map.canvas2d = canvas.new(#map.grid[1]*map.block, #map.grid*map.block)
 local dw, dh = display.size()
 local w2, h2 = map.canvas2d:size()
 
-local door_01 = canvas.new("images/door-01.png")
+local door_01 = canvas.new("images/ghost.png")
 
 map.textures = {
   [0x0200] = canvas.new("images/wall.png"),
