@@ -17,7 +17,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 find_package (PkgConfig REQUIRED)
 
 pkg_check_modules (jCanvas REQUIRED IMPORTED_TARGET jcanvas)
-pkg_check_modules (Lua5.3 REQUIRED IMPORTED_TARGET lua5.3)
+pkg_check_modules (Lua5.4 REQUIRED IMPORTED_TARGET lua5.4)
 
 enable_testing()
 

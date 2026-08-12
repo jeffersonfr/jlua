@@ -12,5 +12,5 @@ add_executable(jlua
 target_link_libraries(jlua
   PRIVATE
     PkgConfig::jCanvas
-    PkgConfig::Lua5.3
+    PkgConfig::Lua5.4
   )
